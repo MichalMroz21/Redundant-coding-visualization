@@ -49,7 +49,7 @@ Window {
                     id: comboBox
                     model: ListModel{
                         ListElement { text: "Hamming" }
-                        ListElement { text: "Drugi" }
+                        ListElement { text: "Reed–Solomon" }
                         ListElement { text: "Trzeci" }
                     }
                     onActivated:{
@@ -116,6 +116,7 @@ Window {
 
                         onClicked:{
                             stackView.push("Options.qml");
+                            Settings.refreshLanguage();
                         }
                     }
                 }
@@ -178,6 +179,43 @@ Window {
         switchContent(0);
     }
 
+    Connections{
+        id: mainSettingsCon
+
+        target: Settings
+
+        function onLangaugeChanged(value){
+
+            switch(value){
+
+            //English
+            case 0:
+
+                selectedAlgorithmText.text = qsTr("Selected algorithm: ")
+                confirmButton.text = qsTr("Confirm")
+                confirmButton.ToolTip.text = qsTr("Confirm your choice of algorithm")
+                exitButton.text = qsTr("Exit")
+
+                messageDialog.title = qsTr("Close")
+                messageDialog.text = qsTr("Do you want to close the program?")
+                break
+
+            //Polish
+            case 1:
+                selectedAlgorithmText.text = qsTr("Wybrany algorytm: ")
+                confirmButton.text = qsTr("Zatwierdź")
+                confirmButton.ToolTip.text = qsTr("Potwierdź wybór algorytmu")
+                exitButton.text = qsTr("Zakończ")
+
+                messageDialog.title = qsTr("Zakończ")
+                messageDialog.text = qsTr("Czy chcesz zakończyć działanie programu?")
+                break
+            }
+
+            switchContent(comboBox.currentIndex)
+        }
+    }
+
     function switchPage(index) {
 
         var pageSelected;
@@ -192,22 +230,46 @@ Window {
     function switchContent(index) {
 
         var imgDescAlgo = []
+        var language = Settings.getLanguage()
 
-        switch (index) {
+        switch (language){
+        case 0:
+            switch (index) {
 
-            case 0: {
-                imgDescAlgo = ["Kod Hamminga (n,k) koduje k bitów informacji na n bitach z użyciem dodatkowych bitów parzystości. Pozwala na detekcję i naprawę pojedynczego błędu.\nW tej implementacji kod jest generowany na podstawie macierzy kontroli parzystości, gdzie reprezentacja liczbowa syndromu błędu wskazuje na pozycję, na której wystąpił błąd (syndrom 0 oznacza brak błędu). Bity parzystości są umieszczone na pozycjach będących potęgami 2 (1, 2, 4...), pierwszy zawiera XORa bitów będących na pozycjach, które mają 1 na najmłodszym bicie, drugi na drugim najmłodszym bicie itp", "../assets/Hamming.png", "Hamming"];
-                break;
+                case 0: {
+                    imgDescAlgo = ["The Hamming (n,k) code encodes k bits of information on n bits using additional parity bits. It allows detection and repair of a single error.In this implementation, the code is generated based on a parity check matrix, where the numerical representation of the error syndrome indicates the position at which the error occurred (syndrome 0 means no error). The parity bits are placed at positions that are powers of 2 (1, 2, 4...), the first contains the XOR of bits that are at positions that have a 1 on the youngest bit, the second on the second youngest bit, etc.", "../assets/Hamming.png", "Hamming"];
+                    break;
+                }
+                case 1: {
+                    imgDescAlgo = ["Description of the second", "../assets/en.png", "Reed–Solomon"];
+                    break;
+                }
+                case 2:{
+                    imgDescAlgo = ["Description of the third", "../assets/pl.png", "Third"];
+                    break;
+                }
             }
-            case 1: {
-                imgDescAlgo = ["Opis drugiego", "../assets/en.png", "Drugi"];
-                break;
+            break
+
+        case 1:
+            switch (index) {
+
+                case 0: {
+                    imgDescAlgo = ["Kod Hamminga (n,k) koduje k bitów informacji na n bitach z użyciem dodatkowych bitów parzystości. Pozwala na detekcję i naprawę pojedynczego błędu.\nW tej implementacji kod jest generowany na podstawie macierzy kontroli parzystości, gdzie reprezentacja liczbowa syndromu błędu wskazuje na pozycję, na której wystąpił błąd (syndrom 0 oznacza brak błędu). Bity parzystości są umieszczone na pozycjach będących potęgami 2 (1, 2, 4...), pierwszy zawiera XORa bitów będących na pozycjach, które mają 1 na najmłodszym bicie, drugi na drugim najmłodszym bicie itp", "../assets/Hamming.png", "Hamminga"];
+                    break;
+                }
+                case 1: {
+                    imgDescAlgo = ["Opis drugiego", "../assets/en.png", "Reeda–Solomona"];
+                    break;
+                }
+                case 2:{
+                    imgDescAlgo = ["Opis trzeciego", "../assets/pl.png", "Trzeci"];
+                    break;
+                }
             }
-            case 2:{
-                imgDescAlgo = ["Opis trzeciego", "../assets/pl.png", "Trzeci"];
-                break;
-            }
+            break
         }
+
 
         descriptionText.text = imgDescAlgo[0];
         image.source = imgDescAlgo[1];

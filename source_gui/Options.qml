@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 6.3
 
+
 Page {
     width: root.width
     height: root.height
@@ -28,7 +29,7 @@ Page {
             Text{
                 id: languageText
                 Layout.alignment: Qt.AlignHCenter
-                text: qsTr("Wybierz język / Choose language")
+                text: qsTr("Choose language / Wybierz język")
                 font.pixelSize: 20
 
                 wrapMode: Text.WordWrap
@@ -40,7 +41,21 @@ Page {
             RowLayout{
 
                 Layout.alignment: Qt.AlignCenter
-
+                ColumnLayout{
+                    Image {
+                        id: enIcon
+                        source: "../assets/en.png"
+                    }
+                    RadioButton{
+                        checked: Settings.getLanguage() === 0 ? true : false
+                        Layout.alignment: Qt.AlignCenter
+                        id: enRadioButton
+                        ButtonGroup.group: selectLangGroup
+                        onClicked: {
+                            Settings.setLanguage(0)
+                        }
+                    }
+                }
                 ColumnLayout{
                     Layout.alignment: Qt.AlignCenter
 
@@ -49,22 +64,16 @@ Page {
                         source: "../assets/pl.png"
                     }
                     RadioButton{
+                        checked: Settings.getLanguage() === 1 ? true : false
                         Layout.alignment: Qt.AlignCenter
                         id: plRadioButton
                         ButtonGroup.group: selectLangGroup
+                        onClicked: {
+                            Settings.setLanguage(1)
+                        }
                     }
                 }
-                ColumnLayout{
-                    Image {
-                        id: enIcon
-                        source: "../assets/en.png"
-                    }
-                    RadioButton{
-                        Layout.alignment: Qt.AlignCenter
-                        id: enRadioButton
-                        ButtonGroup.group: selectLangGroup
-                    }
-                }
+
             }
 
 
@@ -78,9 +87,36 @@ Page {
 
                 onClicked:{
                     stackView.clear(); //will go back to Main.qml, dont do push(main.qml)
+                    Settings.refreshLanguage()
                 }
             }
         }
     }
+
+    Connections{
+
+        target: Settings
+
+        id: settingsConnection
+
+        function onLangaugeChanged(value){
+            switch(value){
+            //English
+            case 0:
+                enRadioButton.checked = true
+                backButton.ToolTip.text = qsTr("Go back to main menu")
+                backButton.text = qsTr("Back")
+                break
+            //Polish
+            case 1:
+                plRadioButton.checked = true
+                backButton.ToolTip.text = qsTr("Wróć do menu głównego")
+                backButton.text = qsTr("Wróć")
+                break
+            }
+        }
+    }
+
+
 
 }
