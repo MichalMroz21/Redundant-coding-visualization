@@ -84,9 +84,14 @@ Window {
                     title: "Zakończ"
                     text: "Czy chcesz zakończyć działanie programu?"
                     buttons: MessageDialog.Yes | MessageDialog.Cancel
-                    onAccepted: {
-                        console.log("End of the program.")
-                        Qt.quit()
+                    onButtonClicked: function (button, role) {
+                        switch (button) {
+                        case MessageDialog.Yes:
+                            console.log("End of the program.")
+                            Qt.quit()
+                            break;
+                        }
+
                     }
                     Component.onCompleted: visible = false
                 }
