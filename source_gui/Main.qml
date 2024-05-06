@@ -50,7 +50,6 @@ Window {
                     model: ListModel{
                         ListElement { text: "Hamming" }
                         ListElement { text: "Reed–Solomon" }
-                        ListElement { text: "Trzeci" }
                     }
                     onActivated:{
                         switchContent(currentIndex);
@@ -227,6 +226,7 @@ Window {
 
         switch (index) {
             case 0: pageSelected = "inputHamming.qml"; break;
+            case 1: pageSelected = "InputReedSolomon.qml"; break;
         }
 
         stackView.push(pageSelected);
@@ -246,11 +246,7 @@ Window {
                     break;
                 }
                 case 1: {
-                    imgDescAlgo = ["Description of the second", "../assets/en.png", "Reed–Solomon"];
-                    break;
-                }
-                case 2:{
-                    imgDescAlgo = ["Description of the third", "../assets/pl.png", "Third"];
+                    imgDescAlgo = ["A sample implementation of Reed-Solomon code using 3 data blocks and 2 redundant blocks, where each block consists of digits from 0 to 9. This implementation serves as a simplification for easier understanding, although in practice, blocks can be significantly larger and represent any binary data. Thanks to the operation on blocks and the ability to correct clustered errors, such as scratches on a CD, Reed-Solomon code is exceptionally effective in protecting data.", "../assets/RS_BER.png", "Reed–Solomon"];
                     break;
                 }
             }
@@ -264,11 +260,7 @@ Window {
                     break;
                 }
                 case 1: {
-                    imgDescAlgo = ["Opis drugiego", "../assets/en.png", "Reeda–Solomona"];
-                    break;
-                }
-                case 2:{
-                    imgDescAlgo = ["Opis trzeciego", "../assets/pl.png", "Trzeci"];
+                    imgDescAlgo = ["Przykładowa implementacja kodu Reeda-Solomona używająca 3 bloków danych i 2 bloków redundantnych, gdzie każdy blok składa się z cyfr od 0 do 9. Taka implementacja jest przykładem uproszczenia dla łatwiejszego zrozumienia, chociaż w praktyce bloki mogą być znacznie większe i reprezentować dowolne dane binarne. Dzięki działaniu na blokach i możliwości korekcji skupionych błędów, jak na przykład zadrapania na płycie CD, kod Reeda-Solomona jest wyjątkowo skuteczny w ochronie danych.", "../assets/RS_BER.png", "Reeda–Solomona"];
                     break;
                 }
             }
