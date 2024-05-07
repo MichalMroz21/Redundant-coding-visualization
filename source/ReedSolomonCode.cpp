@@ -58,9 +58,11 @@ void ReedSolomonCode::encodeDataAsync(bool forQML)
     Poly_Pad(&msg, 0, nsym);
     Poly_Div(nullptr, nullptr, &remainder, &msg, &generator, &this->gf);
     if (forQML) {
+        Poly msgRev;
+        Poly_Reverse(&msgRev, &msg);
         emit setBelowText(QString("wiadomość / funkcja gen. = ? + a + bx"));
         emit setBelowTextExtended(QString("(%1) / (%2) = ? + (%3)")
-                                      .arg(msg.toString())
+                                      .arg(msgRev.toString())
                                       .arg(generator.toString())
                                       .arg(remainder.toString()));
         this->waitForQml();
@@ -109,7 +111,7 @@ int ReedSolomonCode::correctError(bool forQML)
         qInfo() << "Występują błędy, wyszukiwanie pozycji";
         Poly fsynd, errLoc;
         this->forneySyndromes(&fsynd, &synd, k + nsym);
-        bool canLocate = this->findErrorLocator(&errLoc, &fsynd, nsym, nullptr,  0);
+        bool canLocate = this->findErrorLocator(&errLoc, &fsynd, nullptr,  0);
         if (!canLocate)
         {
             qInfo() << "Zbyt dużo błędów do znalezienia!";
@@ -119,6 +121,14 @@ int ReedSolomonCode::correctError(bool forQML)
                 emit endErrorCorrection();
             }
             return -1;
+        }
+        if (forQML)
+        {
+            Poly revErrLoc;
+            Poly_Reverse(&revErrLoc, &errLoc);
+            emit setBelowText("Wielomian wykrycia błędów znaleziony alogrytmem Berlekamp-Masseya");
+            emit setBelowTextExtended(revErrLoc.toString());
+            this->waitForQml();
         }
         std::vector<unsigned int> pos;
         canLocate = this->findErrors(&pos, &errLoc, k + nsym);
@@ -137,6 +147,12 @@ int ReedSolomonCode::correctError(bool forQML)
             qInfo() << "Dodatkowe błędy znalezione na pozycjach: ";
             for_each(pos.begin(), pos.end(), [](unsigned int e) {qInfo() << (int)e << ", "; });
             ret = pos[0];
+            if (forQML)
+            {
+                emit setBelowText(QString("Pozycja błędu znaleziona przez algorytm Chien: %1").arg(ret + 1));
+                emit setBelowTextExtended("");
+                this->waitForQml();
+            }
         }
         bool success = this->correctErrata(&msg, &synd, &pos);
         if (!success)
@@ -375,7 +391,7 @@ bool ReedSolomonCode::correctErrata(Poly* msg, Poly* synd, std::vector<unsigned 
     return true;
 }
 
-bool ReedSolomonCode::findErrorLocator(Poly* out, Poly* synd, int nsym, Poly* eraseLoc, int eraseCount)
+bool ReedSolomonCode::findErrorLocator(Poly* out, Poly* synd, Poly* eraseLoc, int eraseCount)
 {
     //this spits out a polynomial in reverse order but i dont know why
     int init = 1;
