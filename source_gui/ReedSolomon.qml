@@ -215,7 +215,8 @@ Page {
         }
 
         function onEndErrorCorrection() {
-            // TODO
+            nextStepButton.visible = false;
+            mainMenuButton.visible = true;
         }
 
         function onInsertArray(index, str, showSymbols){
@@ -327,7 +328,7 @@ Page {
             visualiseButton.visible = false;
 
             reedSolomonCode.sendCode(getArrayStr(0));
-            reedSolomonCode.correctError(true);
+            reedSolomonCode.correctErrorQml(true);
         }
     }
 

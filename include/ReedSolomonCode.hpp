@@ -104,12 +104,11 @@ class ReedSolomonCode : public QObject
 
 public:
     explicit ReedSolomonCode(QObject *parent = nullptr);
-    void test();
-    bool decode(int* wholeOut, int* out, int* data, int k, int nsym);
 
 public slots:
     void setInitialData(QString data, int animationSpeed = 1000, bool infiniteWait = false);
     int correctError(bool forQML);
+    void correctErrorQml();
     void encodeDataAsync(bool forQML);
     void encodeData(bool forQML);
     void sendCode(QString sent);
@@ -151,14 +150,14 @@ private:
 
 
     QString data{}, receivedCode{}, dataEncoded{};
-    int dataArr[k], dataEncodedArr[total];
+    int dataArr[k], receivedCodeArr[total], dataEncodedArr[total];
     int animationDelayMs{};
     bool infiniteWait = false, buttonPressed = false;
     GaloisField gf;
 
     void waitForQml();
     void createGenerator(Poly* out, bool forQML);
-    void calcSyndromes(Poly* out, Poly* msg, int nsym);
+    void calcSyndromes(Poly* out, Poly* msg, bool forQML);
     bool checkSyndromes(Poly* synd);
     void findErrataLocator(Poly* out, std::vector<unsigned int>* errorPos);
     void findErrorEvaluator(Poly* out, Poly* synd, Poly* errLoc, int nsym);

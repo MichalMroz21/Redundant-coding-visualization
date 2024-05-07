@@ -83,10 +83,87 @@ void ReedSolomonCode::encodeDataAsync(bool forQML)
     if (forQML) emit encodingEnd();
 }
 
+void ReedSolomonCode::correctErrorQml() {
+    static_cast<void>(QtConcurrent::run([=, this](){
+        correctError(true);
+    }));
+}
 
 int ReedSolomonCode::correctError(bool forQML)
 {
-    return 0;
+    Poly synd;
+    Poly msg(k + nsym, this->receivedCodeArr);
+
+    this->calcSyndromes(&synd, &msg, forQML);
+    int ret;
+    if (this->checkSyndromes(&synd))
+    {
+        if (forQML)
+        {
+            emit setBelowText("Wszystkie syndromy są 0 - nie znaleziono błędu");
+        }
+        ret = -1;
+    }
+    else
+    {
+        qInfo() << "Występują błędy, wyszukiwanie pozycji";
+        Poly fsynd, errLoc;
+        this->forneySyndromes(&fsynd, &synd, k + nsym);
+        bool canLocate = this->findErrorLocator(&errLoc, &fsynd, nsym, nullptr,  0);
+        if (!canLocate)
+        {
+            qInfo() << "Zbyt dużo błędów do znalezienia!";
+            if (forQML)
+            {
+                emit setBelowText("Zbyt dużo błędów do znalezienia!");
+                emit endErrorCorrection();
+            }
+            return -1;
+        }
+        std::vector<unsigned int> pos;
+        canLocate = this->findErrors(&pos, &errLoc, k + nsym);
+        if (!canLocate || !(pos.size()))
+        {
+            qInfo() << "Nie udało się znaleźć błędów!";
+            if (forQML)
+            {
+                emit setBelowText("Nie udało się znaleźć błędów!");
+                emit endErrorCorrection();
+            }
+            return -1;
+        }
+        if (pos.size())
+        {
+            qInfo() << "Dodatkowe błędy znalezione na pozycjach: ";
+            for_each(pos.begin(), pos.end(), [](unsigned int e) {qInfo() << (int)e << ", "; });
+            ret = pos[0];
+        }
+        bool success = this->correctErrata(&msg, &synd, &pos);
+        if (!success)
+        {
+            qInfo() << "Nie udało się zdekodować!";
+            if (forQML)
+            {
+                emit setBelowText("Nie udało się zdekodować!");
+                emit endErrorCorrection();
+            }
+            return -1;
+        }
+        QString poprawione = {};
+        for (int i = 0; i < this->total; i++)
+        {
+            poprawione.append(QChar(msg.coef[i] + '0'));
+        }
+        if (forQML)
+        {
+            emit setBelowText(QString("Znaleziono błąd na pozycji %1").arg(ret + 1));
+            emit setBelowTextExtended(QString("Poprawiona wiadomość: %1").arg(poprawione));
+        }
+        qInfo() << "Poprawiono błędy";
+    }
+    if(forQML) emit endErrorCorrection();
+
+    return ret;
 }
 
 int ReedSolomonCode::getAnimationDelayMs() const
@@ -123,6 +200,10 @@ void ReedSolomonCode::pressButton()
 void ReedSolomonCode::sendCode(QString sent)
 {
     this->receivedCode = sent;
+    for (int i = 0; i < sent.length(); i++)
+    {
+        this->receivedCodeArr[i] = sent.at(i).toLatin1() - '0';
+    }
 }
 
 QString ReedSolomonCode::getDataEncoded() const
@@ -136,7 +217,7 @@ QString toString(int* arr, int size)
     for (int i = 0; i < size; i++)
     {
         if (arr[i] == 0) continue;
-        QString x = QString("x^%1 ").arg(size - 1);
+        QString x = QString("x^%1 ").arg(i);
         if (i == 1) x = "x ";
         if (i == 0) x = "";
         result.append(QString("%1%2%3")
@@ -158,7 +239,6 @@ std::vector<unsigned int> toVector(QString s)
     }
     return result;
 }
-
 
 void ReedSolomonCode::createGenerator(Poly* out, bool forQML)
 {
@@ -191,15 +271,35 @@ void ReedSolomonCode::createGenerator(Poly* out, bool forQML)
     }
 }
 
-void ReedSolomonCode::calcSyndromes(Poly* out, Poly* msg, int nsym)
+void ReedSolomonCode::calcSyndromes(Poly* out, Poly* msg, bool forQML)
 {
     int* temp = (int*)malloc(sizeof(int) * (nsym + 1));
     for (int i = 0; i < nsym; i++)
     {
+        QString text = QString("(%1)(%2)").arg(msg->toString()).arg(this->gf.powTable[i]);
+        if (forQML)
+        {
+            QString belowText = QString("Liczenie syndromu nr %1").arg(i + 1);
+            emit setBelowText(belowText);
+            emit setBelowTextExtended(text);
+            this->waitForQml();
+        }
         temp[nsym - i - 1] = Poly_Eval(msg, this->gf.powTable[i], &this->gf);
+        if (forQML)
+        {
+            text.append(QString(" = %1").arg(temp[nsym - i -1]));
+            qInfo() << "text: " << text;
+            emit setBelowTextExtended(text);
+            this->waitForQml();
+        }
     }
     temp[nsym] = 0; //pad
     out->setRef(nsym + 1, temp);
+    if (forQML)
+    {
+        emit setBelowText("");
+        emit setBelowTextExtended("");
+    }
 }
 
 bool ReedSolomonCode::checkSyndromes(Poly* synd)
@@ -356,53 +456,6 @@ void ReedSolomonCode::forneySyndromes(Poly* out, Poly* synd, int n)
 {
     Poly fsynd(synd->n - 1, synd->coef);
     out->setCopy(fsynd.n, fsynd.coef);
-}
-
-bool ReedSolomonCode::decode(int* wholeOut, int* out, int* data, int k, int nsym)
-{
-    Poly synd;
-    Poly msg(k + nsym, data);
-    this->calcSyndromes(&synd, &msg, nsym);
-    if (!this->checkSyndromes(&synd))
-    {
-        qInfo() << "Występują błędy, wyszukiwanie pozycji";
-        Poly fsynd, errLoc;
-        this->forneySyndromes(&fsynd, &synd, k + nsym);
-        bool canLocate = this->findErrorLocator(&errLoc, &fsynd, nsym, nullptr,  0);
-        if (!canLocate)
-        {
-            qInfo() << "Zbyt dużo błędów do znalezienia!";
-            return false;
-        }
-        std::vector<unsigned int> pos;
-        canLocate = this->findErrors(&pos, &errLoc, k + nsym);
-        if (!canLocate || !(pos.size()))
-        {
-            qInfo() << "Nie udało się znaleźć błędów!";
-            return false;
-        }
-        if (pos.size())
-        {
-            qInfo() << "Dodatkowe błędy znalezione na pozycjach: ";
-            for_each(pos.begin(), pos.end(), [](unsigned int e) {qInfo() << (int)e << ", "; });
-        }
-        bool success = this->correctErrata(&msg, &synd, &pos);
-        if (!success)
-        {
-            qInfo() << "Nie udało się zdekodować!";
-            return false;
-        }
-        qInfo() << "Poprawiono błędy";
-    }
-    if (wholeOut)
-    {
-        memcpy(wholeOut, msg.coef, sizeof(int) * (k + nsym));
-    }
-    if (out)
-    {
-        memcpy(out, msg.coef, sizeof(int) * k);
-    }
-    return true;
 }
 
 
