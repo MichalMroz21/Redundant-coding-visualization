@@ -86,7 +86,7 @@ Page {
                 snapMode: RangeSlider.SnapOnRelease
                 stepSize: 100
                 to: 3000
-                value: 1000
+                value: 3000
 
                 property bool isInfinite: value == to
 
@@ -112,7 +112,7 @@ Page {
 
                     if(rsData.text.length === 5){
                         reedSolomonCode.setInitialData(rsData.text, animationDelay.value, animationDelay.isInfinite);
-                        stackView.push("ReedSolomon.qml");
+                        stackView.push("Galois.qml");
                     }
 
                     else{

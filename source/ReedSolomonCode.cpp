@@ -214,17 +214,19 @@ QString ReedSolomonCode::getDataEncoded() const
 QString toString(int* arr, int size)
 {
     QString result{};
-    for (int i = 0; i < size; i++)
+    bool plus = false;
+    for (int i = size - 1; i >= 0; i--)
     {
         if (arr[i] == 0) continue;
         QString x = QString("x^%1 ").arg(i);
         if (i == 1) x = "x ";
         if (i == 0) x = "";
         result.append(QString("%1%2%3")
-                          .arg(i == 0 ? "" : "+ ")
+                          .arg(plus ? "+ " : "")
                           .arg(QChar('0' + arr[i]))
                           .arg(x)
                       );
+        plus = true;
     }
     return result;
 }
@@ -265,7 +267,8 @@ void ReedSolomonCode::createGenerator(Poly* out, bool forQML)
     }
     if (forQML)
     {
-        belowTextExt = out->toString();
+
+        belowTextExt.append(QString(" = %1").arg(out->toString()));
         emit setBelowTextExtended(belowTextExt);
         this->waitForQml();
     }
