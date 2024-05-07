@@ -43,7 +43,7 @@ Page {
                 id: rsData
                 color: "black"
 
-                property int maxLength : 3;
+                property int maxLength : 5;
 
                 Layout.alignment: Qt.AlignHCenter
 
@@ -59,22 +59,13 @@ Page {
                     }
                 }
 
-                validator: RegularExpressionValidator {regularExpression: /^[0-9]{0,3}$/}
+                validator: RegularExpressionValidator {regularExpression: /^[0-8]{0,5}$/}
 
                 onTextChanged: {
                     if(length > maxLength) remove(maxLength, length);
-                    rsPolynomial.text = "f(x) = %1x^2 + %2x + %3 mod 10"
-                            .arg(length > 0 ? text[0] : '0')
-                            .arg(length > 1 ? text[1] : '0')
-                            .arg(length > 2 ? text[2] : '0');
                 }
 
                 font.pointSize: 0.01 * (root.width + root.height)
-            }
-
-            Text {
-                id: rsPolynomial;
-                text: "f(x) = 0x^2 + 0x + 0 mod 10";
             }
 
             Text {
@@ -119,13 +110,13 @@ Page {
 
                 onClicked:{
 
-                    if(rsData.text.length === 3){
+                    if(rsData.text.length === 5){
                         reedSolomonCode.setInitialData(rsData.text, animationDelay.value, animationDelay.isInfinite);
                         stackView.push("ReedSolomon.qml");
                     }
 
                     else{
-                        errorMsg.text = "Potrzeba dokładnie 3 cyfr!";
+                        errorMsg.text = "Wpisz 5 cyfr!";
                     }
                 }
             }

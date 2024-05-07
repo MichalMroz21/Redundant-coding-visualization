@@ -313,7 +313,6 @@ Page {
             stageText.text = "Poprawianie błędów";
             stageTextExt.visible = true;
             visualiseButton.visible = true;
-            // emptyarrayRowLayoutRowColumn.myArr = reedSolomonCode.getDataEncoded();
             arrays[0].myArr = reedSolomonCode.getDataEncoded();
             onSetClickAllow(0, true);
         }

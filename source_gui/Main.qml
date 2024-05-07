@@ -246,7 +246,7 @@ Window {
                     break;
                 }
                 case 1: {
-                    imgDescAlgo = ["A sample implementation of Reed-Solomon code using 3 data blocks and 2 redundant blocks, where each block consists of digits from 0 to 9. This implementation serves as a simplification for easier understanding, although in practice, blocks can be significantly larger and represent any binary data. Thanks to the operation on blocks and the ability to correct clustered errors, such as scratches on a CD, Reed-Solomon code is exceptionally effective in protecting data.", "../assets/RS_BER.png", "Reed–Solomon"];
+                    imgDescAlgo = ["A sample implementation of Reed-Solomon code using 5 data symbols and 2 redundant symbols in Galois Field (3-bit data). In practice, blocks can be significantly larger and represent any binary data, e.g. 232 + 23 symbols in GF(256). Thanks to the operation on blocks and the ability to correct clustered errors, such as scratches on a CD, Reed-Solomon code is exceptionally effective in protecting data.", "../assets/RS_BER.png", "Reed–Solomon"];
                     break;
                 }
             }
@@ -260,7 +260,7 @@ Window {
                     break;
                 }
                 case 1: {
-                    imgDescAlgo = ["Przykładowa implementacja kodu Reeda-Solomona używająca 3 bloków danych i 2 bloków redundantnych, gdzie każdy blok składa się z cyfr od 0 do 9. Taka implementacja jest przykładem uproszczenia dla łatwiejszego zrozumienia, chociaż w praktyce bloki mogą być znacznie większe i reprezentować dowolne dane binarne. Dzięki działaniu na blokach i możliwości korekcji skupionych błędów, jak na przykład zadrapania na płycie CD, kod Reeda-Solomona jest wyjątkowo skuteczny w ochronie danych.", "../assets/RS_BER.png", "Reeda–Solomona"];
+                    imgDescAlgo = ["Przykładowa implementacja kodu Reeda-Solomona używająca 5 symboli danych i 2 symboli redundantnych w Galois Field(8) (dane 3-bitowe). W praktyce bloki są znacznie większe i reprezentować dowolne dane binarne, przykładowo 232 + 23 symboli w GF(256). Dzięki działaniu na blokach i możliwości korekcji skupionych błędów, jak na przykład zadrapania na płycie CD, kod Reeda-Solomona jest wyjątkowo skuteczny w ochronie danych.", "../assets/RS_BER.png", "Reeda–Solomona"];
                     break;
                 }
             }
