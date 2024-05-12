@@ -30,17 +30,19 @@ RowLayout{
 
             Text {
                 anchors.centerIn: parent
-                text: parent.parent.myArr.charAt(index)
-                color: "black"
+                text: parent.parent.myArr.charAt(index);
+                font.pixelSize: 50;
             }
 
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: parent.top
-                anchors.topMargin: -25
+                anchors.topMargin: -40
                 text: !showSymbols ? "" : simpleSymbols ? "d" + (index).toString() : hammingCode.getSymbol(index)
                 color: "black"
                 visible: showSymbols
+                font.pixelSize: 30
+
             }
 
             border.width: 1

@@ -50,7 +50,6 @@ Window {
                     model: ListModel{
                         ListElement { text: "Hamming" }
                         ListElement { text: "Reed–Solomon" }
-                        ListElement { text: "Trzeci" }
                     }
                     onActivated:{
                         switchContent(currentIndex);
@@ -84,9 +83,14 @@ Window {
                     title: "Zakończ"
                     text: "Czy chcesz zakończyć działanie programu?"
                     buttons: MessageDialog.Yes | MessageDialog.Cancel
-                    onAccepted: {
-                        console.log("End of the program.")
-                        Qt.quit()
+                    onButtonClicked: function (button, role) {
+                        switch (button) {
+                        case MessageDialog.Yes:
+                            console.log("End of the program.")
+                            Qt.quit()
+                            break;
+                        }
+
                     }
                     Component.onCompleted: visible = false
                 }
@@ -161,7 +165,11 @@ Window {
 
                     wrapMode: Text.WordWrap
 
-                    width: parent.width //without this it won't wrap LOL
+                    onLinkActivated: {
+                        Qt.openUrlExternally(link)
+                    }
+
+                    width: parent.width
 
                     padding: 10
                 }
@@ -222,6 +230,7 @@ Window {
 
         switch (index) {
             case 0: pageSelected = "inputHamming.qml"; break;
+            case 1: pageSelected = "InputReedSolomon.qml"; break;
         }
 
         stackView.push(pageSelected);
@@ -241,11 +250,7 @@ Window {
                     break;
                 }
                 case 1: {
-                    imgDescAlgo = ["Description of the second", "../assets/en.png", "Reed–Solomon"];
-                    break;
-                }
-                case 2:{
-                    imgDescAlgo = ["Description of the third", "../assets/pl.png", "Third"];
+                    imgDescAlgo = ["A sample implementation of Reed-Solomon code using 5 data symbols and 2 redundant symbols in Galois Field (3-bit data). In practice, blocks can be significantly larger and represent any binary data, e.g. 232 + 23 symbols in GF(256). Thanks to the operation on blocks and the ability to correct clustered errors, such as scratches on a CD, Reed-Solomon code is exceptionally effective in protecting data. Based on <a href='https://en.wikiversity.org/wiki/Reed%E2%80%93Solomon_codes_for_coders#Finite_field_arithmetic'>wikiversity implementation.</a>", "../assets/RS_BER.png", "Reed–Solomon"];
                     break;
                 }
             }
@@ -259,11 +264,7 @@ Window {
                     break;
                 }
                 case 1: {
-                    imgDescAlgo = ["Opis drugiego", "../assets/en.png", "Reeda–Solomona"];
-                    break;
-                }
-                case 2:{
-                    imgDescAlgo = ["Opis trzeciego", "../assets/pl.png", "Trzeci"];
+                    imgDescAlgo = ["Przykładowa implementacja kodu Reeda-Solomona używająca 5 symboli danych i 2 symboli redundantnych w Galois Field(8) (dane 3-bitowe). W praktyce bloki są znacznie większe i reprezentować dowolne dane binarne, przykładowo 232 + 23 symboli w GF(256). Dzięki działaniu na blokach i możliwości korekcji skupionych błędów, jak na przykład zadrapania na płycie CD, kod Reeda-Solomona jest wyjątkowo skuteczny w ochronie danych. Na podstawie <a href='https://en.wikiversity.org/wiki/Reed%E2%80%93Solomon_codes_for_coders'>implementacji wikiversity.</a>", "../assets/RS_BER.png", "Reeda–Solomona"];
                     break;
                 }
             }

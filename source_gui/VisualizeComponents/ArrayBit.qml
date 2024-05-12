@@ -13,5 +13,6 @@ Rectangle
         anchors.centerIn: parent;
         text: bit;
         color: "black"
+        font.pixelSize: 50;
     }
 }

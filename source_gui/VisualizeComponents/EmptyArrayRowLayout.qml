@@ -31,15 +31,17 @@ RowLayout{
                 anchors.centerIn: parent
                 text: " "
                 color: "black"
+                font.pixelSize: 50;
             }
 
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: parent.top
-                anchors.topMargin: -25
+                anchors.topMargin: -40
                 text: hammingCode.getSymbol(index)
                 color: "black"
                 visible: showSymbols
+                font.pixelSize: 30
             }
 
             border.width: 1

@@ -6,6 +6,7 @@
 #include "CMakeConfig.hpp"
 #include "DebugInterceptor.hpp"
 #include "HammingCode.hpp"
+#include "ReedSolomonCode.hpp"
 #include "Settings.hpp"
 #include <boost/regex.hpp>
 
@@ -15,6 +16,7 @@ int main(int argc, char *argv[])
 
     auto debugInterceptor = DebugInterceptor::getInstance();
     auto hammingCode = QSharedPointer<HammingCode>(new HammingCode());
+    auto reedSolomonCode = QSharedPointer<ReedSolomonCode>(new ReedSolomonCode());
     Settings settings;
 
     debugInterceptor.data()->disableDebug();
@@ -27,6 +29,7 @@ int main(int argc, char *argv[])
 
     //adding objects to every .qml
     engine.rootContext()->setContextProperty("hammingCode", hammingCode.data());
+    engine.rootContext()->setContextProperty("reedSolomonCode", reedSolomonCode.data());
 
     //adding settings to every .qml
     engine.rootContext()->setContextProperty("Settings", &settings);
