@@ -156,9 +156,9 @@ private:
     void createGenerator(Poly* out, bool forQML);
     void calcSyndromes(Poly* out, Poly* msg, bool forQML);
     bool checkSyndromes(Poly* synd);
-    void findErrataLocator(Poly* out, std::vector<unsigned int>* errorPos);
-    void findErrorEvaluator(Poly* out, Poly* synd, Poly* errLoc, int nsym);
-    bool correctErrata(Poly* msg, Poly* synd, std::vector<unsigned int>* errPos);
+    void findErrataLocator(Poly* out, std::vector<unsigned int>* errorPos, bool forQML);
+    void findErrorEvaluator(Poly* out, Poly* synd, Poly* errLoc, int nsym, bool forQML);
+    bool correctErrata(Poly* msg, Poly* synd, std::vector<unsigned int>* errPos, bool forQML);
     bool findErrorLocator(Poly* out, Poly* synd, bool forQML);
     bool findErrors(std::vector<unsigned int>* out, Poly* errLoc, int n, bool forQML);
     void forneySyndromes(Poly* out, Poly* synd, int n);

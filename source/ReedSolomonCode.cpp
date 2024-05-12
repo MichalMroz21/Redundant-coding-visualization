@@ -60,10 +60,12 @@ void ReedSolomonCode::encodeDataAsync(bool forQML)
     if (forQML) {
         Poly msgRev;
         Poly_Reverse(&msgRev, &msg);
+        Poly genRev;
+        Poly_Reverse(&genRev, &generator);
         emit setBelowText(QString("wiadomość / wielomian generujący. = ? + (bx + a)"));
         emit setBelowTextExtended(QString("(%1) / (%2) = ? + (%3)")
                                       .arg(msgRev.toString())
-                                      .arg(generator.toString())
+                                      .arg(genRev.toString())
                                       .arg(remainder.toString()));
         this->waitForQml();
         for (int i = k; i < total; i++)
@@ -159,7 +161,7 @@ int ReedSolomonCode::correctError(bool forQML)
                 this->waitForQml();
             }
         }
-        bool success = this->correctErrata(&msg, &synd, &pos);
+        bool success = this->correctErrata(&msg, &synd, &pos, forQML);
         if (!success)
         {
             qInfo() << "Nie udało się zdekodować!";
@@ -276,8 +278,10 @@ void ReedSolomonCode::createGenerator(Poly* out, bool forQML)
     }
     if (forQML)
     {
+        Poly genRev;
+        Poly_Reverse(&genRev, out);
         emit setBelowText("Wielomian generujący");
-        emit setBelowTextExtended(out->toString());
+        emit setBelowTextExtended(genRev.toString());
         this->waitForQml();
     }
 }
@@ -325,7 +329,7 @@ bool ReedSolomonCode::checkSyndromes(Poly* synd)
     return true;
 }
 
-void ReedSolomonCode::findErrataLocator(Poly* out, std::vector<unsigned int>* errPos)
+void ReedSolomonCode::findErrataLocator(Poly* out, std::vector<unsigned int>* errPos, bool forQML)
 {
     out->setCopy(1, nullptr);
     out->coef[0] = 1;
@@ -335,25 +339,58 @@ void ReedSolomonCode::findErrataLocator(Poly* out, std::vector<unsigned int>* er
     {
         factor.coef[0] = this->gf.powTable[i];
         Poly_Mult(out, out, &factor, &this->gf);
+        if (forQML)
+        {
+            emit setBelowText("errata locator = 1x + 2^coefPos");
+            emit setBelowTextExtended(QString("1x + 2^%1 = %2").arg(i).arg(out->toString()));
+            this->waitForQml();
+        }
     }
 }
 
-void ReedSolomonCode::findErrorEvaluator(Poly* out, Poly* synd, Poly* errLoc, int nsym)
+void ReedSolomonCode::findErrorEvaluator(Poly* out, Poly* synd, Poly* errLoc, int nsym, bool forQML)
 {
+
     Poly_Mult(out, synd, errLoc, &this->gf); //synd lul
+    {
+        emit setBelowText("syndrom * errata locator = error evaluator * x^2 + bx + c");
+        emit setBelowTextExtended(QString("(%1) * (%2) = %3").arg(synd->toString()).arg(errLoc->toString()).arg(out->toString()));
+        this->waitForQml();
+    }
     Poly_Trim(out, out->n - nsym, 0);
+    if (forQML)
+    {
+        emit setBelowText("error evaluator");
+        emit setBelowTextExtended(QString("%1").arg(out->toString()));
+        this->waitForQml();
+    }
 }
 
-bool ReedSolomonCode::correctErrata(Poly* msg, Poly* synd, std::vector<unsigned int>* errPos)
+bool ReedSolomonCode::correctErrata(Poly* msg, Poly* synd, std::vector<unsigned int>* errPos, bool forQML)
 {
+    if (forQML)
+    {
+        emit setBelowText("Szukanie wielkości błędu");
+        emit setBelowTextExtended("");
+        this->waitForQml();
+    }
     std::vector<unsigned int> coefPos(0);
     for (unsigned int i : *errPos)
     {
         coefPos.push_back(msg->n - 1 - i);
+        if (forQML)
+        {
+            emit setTopText("Szukanie wielkości błędu");
+            emit setBelowText("coefPos - pozycja błędu liczona od końca od 0");
+            emit setBelowTextExtended(QString("coefPos = %1").arg(msg->n - 1 - i));
+            this->waitForQml();
+        }
     }
     Poly errLoc, errEval;
-    this->findErrataLocator(&errLoc, &coefPos);
-    this->findErrorEvaluator(&errEval, synd, &errLoc, errLoc.n);
+    this->findErrataLocator(&errLoc, &coefPos, forQML);
+    qInfo() << "Errata locator: " << errLoc.toString();
+    this->findErrorEvaluator(&errEval, synd, &errLoc, errLoc.n, forQML);
+    qInfo() << "Evaluator: " << errEval.toString();
     //Poly_Reverse(errEval, errEval); //reverse it for later use
     std::vector<int> x(coefPos.size());
     for (int i = 0; i < x.size(); i++)
@@ -364,6 +401,12 @@ bool ReedSolomonCode::correctErrata(Poly* msg, Poly* synd, std::vector<unsigned 
     for (int i = 0; i < x.size(); i++)
     {
         int xi = this->gf.powTable[this->gf.characteristic - coefPos[i]];
+        if (forQML)
+        {
+            emit setBelowText("xi = 2^(charakterystyka GF - coefPos)");
+            emit setBelowTextExtended(QString("xi = 2^(%1 - %2) = %3").arg(this->gf.characteristic).arg(coefPos[i]).arg(xi));
+            this->waitForQml();
+        }
         int errLocPrime = 1;
         for (int j = 0; j < x.size(); j++)
         {
@@ -376,10 +419,38 @@ bool ReedSolomonCode::correctErrata(Poly* msg, Poly* synd, std::vector<unsigned 
         {
             return false;
         }
-        int y = this->gf.mult(x[i], Poly_Eval(&errEval, xi, &this->gf));
+        if (forQML)
+        {
+            emit setBelowText(QString("errLocPrime = %1").arg(errLocPrime));
+            emit setBelowTextExtended("");
+            this->waitForQml();
+        }
+        int eval = Poly_Eval(&errEval, xi, &this->gf);
+        int y = this->gf.mult(x[i], eval);
+        if (forQML)
+        {
+            emit setBelowText(QString("y = 2^coefPos * error evaluator").arg(errLocPrime));
+            emit setBelowTextExtended(QString("y = 2^%1 * %2").arg(x[i]).arg(eval));
+            this->waitForQml();
+        }
         e.coef[errPos->at(i)] = this->gf.div(y, errLocPrime); //magnitude
+        if (forQML)
+        {
+            emit setBelowText("Wielkość błędu = y / errLocPrime");
+            emit setBelowTextExtended(QString("Wielkość błędu = %1 / %2 = %3").arg(y).arg(errLocPrime).arg(e.coef[errPos->at(i)]));
+            this->waitForQml();
+        }
     }
+    QString tmp = msg->toString();
     Poly_Add(msg, msg, &e);
+    if (forQML)
+    {
+        emit setBelowText("Poprawiona wiadomość = błędy + otrzymana wiadomość");
+        emit setBelowTextExtended(QString("(%1) + (%2)").arg(e.toString()).arg(tmp));
+        this->waitForQml();
+        emit setBelowTextExtended(msg->toString());
+        this->waitForQml();
+    }
     return true;
 }
 
@@ -435,17 +506,8 @@ bool ReedSolomonCode::findErrorLocator(Poly* out, Poly* synd, bool forQML)
                     this->waitForQml();
                 }
             }
-            QString t = oldLoc.toString();
-            QString t2 = errLoc.toString();
-            QString t3 = temp.toString();
             Poly_Scale(&temp, &oldLoc, delta, &this->gf);
-            t = oldLoc.toString();
-            t2 = errLoc.toString();
-            t3 = temp.toString();
             Poly_Add(&errLoc, &errLoc, &temp);
-            t = oldLoc.toString();
-            t2 = errLoc.toString();
-            t3 = temp.toString();
             if (forQML && i == 0)
             {
                 Poly revErrLoc;
@@ -470,6 +532,12 @@ bool ReedSolomonCode::findErrorLocator(Poly* out, Poly* synd, bool forQML)
 
 bool ReedSolomonCode::findErrors(std::vector<unsigned int>* out, Poly* errLoc, int n, bool forQML)
 {
+    if (forQML)
+    {
+        emit setBelowText("Szukanie pozycji błędu");
+        emit setBelowTextExtended("");
+        this->waitForQml();
+    }
     int errs = errLoc->n - 1;
     Poly revErrLoc;
     Poly_Reverse(&revErrLoc, errLoc);
@@ -738,7 +806,7 @@ void ReedSolomonCode::Poly_ChienSearch(std::vector<unsigned int>* out, Poly* pol
             this->waitForQml();
             if (eval == 0)
             {
-                emit setBelowText(QString("Wartość 0 - błąd na pozycji długość wiadomości - %1").arg(i));
+                emit setBelowText(QString("Wartość 0 - błąd na pozycji [długość wiadomości] - %1").arg(i));
                 emit setBelowTextExtended(QString("%1 - %2 = %3").arg(max).arg(i).arg(max - i));
                 this->waitForQml();
                 free(temp);
