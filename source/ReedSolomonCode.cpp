@@ -136,7 +136,7 @@ int ReedSolomonCode::correctError(bool forQML)
             this->waitForQml();
         }
         std::vector<unsigned int> pos;
-        canLocate = this->findErrors(&pos, &errLoc, k + nsym);
+        canLocate = this->findErrors(&pos, &errLoc, k + nsym, forQML);
         if (!canLocate || !(pos.size()))
         {
             qInfo() << "Nie udało się znaleźć błędów!";
@@ -468,23 +468,13 @@ bool ReedSolomonCode::findErrorLocator(Poly* out, Poly* synd, bool forQML)
     return true;
 }
 
-bool ReedSolomonCode::findErrors(std::vector<unsigned int>* out, Poly* errLoc, int n)
+bool ReedSolomonCode::findErrors(std::vector<unsigned int>* out, Poly* errLoc, int n, bool forQML)
 {
     int errs = errLoc->n - 1;
     Poly revErrLoc;
     Poly_Reverse(&revErrLoc, errLoc);
-    if (errLoc->n == 1)
-    {
-        //do something special here? idk
-    }
-    else if (errLoc->n == 2)
-    { //linear equation
-        out->push_back(this->gf.logTable[this->gf.div(errLoc->coef[0], errLoc->coef[1])]);
-    }
-    else
-    {
-        Poly_ChienSearch(out, &revErrLoc, n, &this->gf);
-    }
+    Poly_ChienSearch(out, &revErrLoc, n, &this->gf, forQML);
+
     if (out->size() != errs)
     {
         // Too many (or few) errors found by Chien Search for the errata locator polynomial!
@@ -723,23 +713,48 @@ int Poly_Eval(Poly* poly, int x, GaloisField* gf)
     return y;
 }
 
-void Poly_ChienSearch(std::vector<unsigned int>* out, Poly* poly, int max, GaloisField* gf)
+void ReedSolomonCode::Poly_ChienSearch(std::vector<unsigned int>* out, Poly* poly, int max, GaloisField* gf, bool forQML)
 {
+    if (forQML)
+    {
+        emit setTopText("Szukanie pozycji błędu");
+        emit setBelowText(QString("Lokator ax + b - błąd na pozycji "));
+    }
+
     //this seems unnecessary because all multiplications are performed via lookup table anyway
     int* temp = (int*)malloc(sizeof(int)* poly->n);
     memcpy(temp, poly->coef, sizeof(int) * poly->n);
     for (int i = 0; i < max; i++)
     {
-        int sum = 0;
-        for (int j = 0; j < poly->n; j++)
-        {
-            sum ^= temp[j];
-            temp[j] = gf->mult(temp[j], gf->powTable[poly->n - j - 1]);
-        }
-        if (!sum)
+        int eval = Poly_Eval(poly, gf->powTable[i], gf);
+        if (eval == 0)
         {
             out->push_back(i);
         }
+        if (forQML)
+        {
+            emit setBelowText(QString("Wartość wielomianu w punkcie 2^%1").arg(i));
+            emit setBelowTextExtended(QString("(%1)(%2) = %3").arg(poly->toString()).arg(gf->powTable[i]).arg(eval));
+            this->waitForQml();
+            if (eval == 0)
+            {
+                emit setBelowText(QString("Wartość 0 - błąd na pozycji długość wiadomości - %1").arg(i));
+                emit setBelowTextExtended(QString("%1 - %2 = %3").arg(max).arg(i).arg(max - i));
+                this->waitForQml();
+                free(temp);
+                return;
+            }
+        }
+        // int sum = 0;
+        // for (int j = 0; j < poly->n; j++)
+        // {
+        //     sum ^= temp[j];
+        //     temp[j] = gf->mult(temp[j], gf->powTable[poly->n - j - 1]);
+        // }
+        // if (!sum)
+        // {
+        //     out->push_back(i);
+        // }
     }
     free(temp);
 }

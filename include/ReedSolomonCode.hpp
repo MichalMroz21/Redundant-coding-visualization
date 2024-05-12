@@ -88,7 +88,6 @@ void Poly_Scale(Poly* out, Poly* in, int scale, GaloisField* gf);
 void Poly_Mult(Poly* out, Poly* a, Poly* b, GaloisField* gf);
 void Poly_Div(Poly* result, Poly* quotient, Poly* remainder, Poly* a, Poly* b, GaloisField* gf);
 int Poly_Eval(Poly* poly, int x, GaloisField* gf);
-void Poly_ChienSearch(std::vector<unsigned int>* out, Poly* poly, int max, GaloisField* gf);
 void Poly_Pad(Poly* poly, int left, int right);
 void Poly_Trim(Poly* poly, int left, int right);
 void Poly_Append(Poly* out, Poly* a, Poly* b);
@@ -161,8 +160,9 @@ private:
     void findErrorEvaluator(Poly* out, Poly* synd, Poly* errLoc, int nsym);
     bool correctErrata(Poly* msg, Poly* synd, std::vector<unsigned int>* errPos);
     bool findErrorLocator(Poly* out, Poly* synd, bool forQML);
-    bool findErrors(std::vector<unsigned int>* out, Poly* errLoc, int n);
+    bool findErrors(std::vector<unsigned int>* out, Poly* errLoc, int n, bool forQML);
     void forneySyndromes(Poly* out, Poly* synd, int n);
+    void Poly_ChienSearch(std::vector<unsigned int>* out, Poly* poly, int max, GaloisField* gf, bool forQML);
 
 };
 
