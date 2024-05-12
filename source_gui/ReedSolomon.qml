@@ -260,6 +260,10 @@ Page {
             arrays[arrIndex].array[index].children[0].text = bit
         }
 
+        function onSetTopText(text) {
+            stageText.text = text
+        }
+
         function onInsertBit(arrIndex, index, bit, showSymbols){
             var bitStr = getArrayStr(arrIndex);
 
@@ -303,7 +307,7 @@ Page {
 
         Component.onCompleted: {
             //stageText.text = "Encoding...";
-            stageText.text = "Odkodowywanie...";
+            stageText.text = "Kodowanie...";
             reedSolomonCode.encodeData(true);
         }
 

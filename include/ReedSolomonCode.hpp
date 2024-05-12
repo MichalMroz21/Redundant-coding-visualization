@@ -129,6 +129,7 @@ signals:
     void deleteArrayAtIndex(int index);
 
     void setBit(int arrIndex, int index, QString bit);
+    void setTopText(QString text);
 
     void insertEmptyBit(int arrIndex, int index);
     void insertBit(int arrIndex, int index, QString bit, bool showSymbols);
@@ -159,7 +160,7 @@ private:
     void findErrataLocator(Poly* out, std::vector<unsigned int>* errorPos);
     void findErrorEvaluator(Poly* out, Poly* synd, Poly* errLoc, int nsym);
     bool correctErrata(Poly* msg, Poly* synd, std::vector<unsigned int>* errPos);
-    bool findErrorLocator(Poly* out, Poly* synd, Poly* eraseLoc, int eraseCount);
+    bool findErrorLocator(Poly* out, Poly* synd, bool forQML);
     bool findErrors(std::vector<unsigned int>* out, Poly* errLoc, int n);
     void forneySyndromes(Poly* out, Poly* synd, int n);
 
