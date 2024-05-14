@@ -1,0 +1,9 @@
+selectedAlgorithmText: "Wybrany algorytm: "
+confirmButton: "Zatwierdź"
+confirmButton.ToolTip: "Potwierdź wybór algorytmu"
+exitButton: "Zakończ"
+messageDialog.title: "Zakończ"
+messageDialog: "Czy chcesz zakończyć działanie programu?"
+
+backButton.ToolTip: "Wróć do menu głównego"
+backButton: "Wróć"

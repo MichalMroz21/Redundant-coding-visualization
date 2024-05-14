@@ -12,16 +12,24 @@ class Settings : public QObject{
     public:
 
         explicit Settings(QObject *parent = nullptr);
+        QString availableLanguagesToString(int language);
 
     public slots:
         void setLanguage(int value);
         int getLanguage();
         void refreshLanguage();
+        void readFile(int QMLpage);
 
     signals:
         void langaugeChanged(int newLanguage);
+        void loadedPageContent(QString pageContent);
 
-    private:    
+    private:
+
+        enum availableLanguages{
+            en,         // 0 - English
+            pl          // 1 - Polish
+        };
         int language = 1; //0 - English, 1 - Polish
         QSettings* settings = new QSettings("Redundant Coding", "App");
 };

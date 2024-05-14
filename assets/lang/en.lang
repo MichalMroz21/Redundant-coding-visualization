@@ -1,0 +1,9 @@
+selectedAlgorithmText: "Selected algorithm: "
+confirmButton: "Confirm"
+confirmButton.ToolTip: "Confirm your choice of algorithm"
+exitButton: "Exit"
+messageDialog.title: "Close"
+messageDialog: "Do you want to close the program?"
+
+backButton.ToolTip: "Go back to main menu"
+backButton: "Back"

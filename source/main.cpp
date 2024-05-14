@@ -41,7 +41,8 @@ int main(int argc, char *argv[])
         Qt::QueuedConnection);
     engine.load(url);
 
-    emit settings.langaugeChanged(settings.getLanguage());
+    //emit settings.langaugeChanged(settings.getLanguage());
+    emit settings.readFile(0);
 
     return app.exec();
 }

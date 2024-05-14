@@ -120,7 +120,8 @@ Window {
 
                         onClicked:{
                             stackView.push("Options.qml");
-                            Settings.refreshLanguage();
+                            Settings.readFile(1);
+                            //Settings.refreshLanguage();
                         }
                     }
                 }
@@ -192,36 +193,50 @@ Window {
 
         target: Settings
 
-        function onLangaugeChanged(value){
+        function onLoadedPageContent(output){
 
-            switch(value){
+            const myArray = output.split("\n");
+            selectedAlgorithmText.text = qsTr(myArray[0])
+            confirmButton.text = qsTr(myArray[1])
+            confirmButton.ToolTip.text = qsTr(myArray[2])
+            exitButton.text = qsTr(myArray[3])
 
-            //English
-            case 0:
-
-                selectedAlgorithmText.text = qsTr("Selected algorithm: ")
-                confirmButton.text = qsTr("Confirm")
-                confirmButton.ToolTip.text = qsTr("Confirm your choice of algorithm")
-                exitButton.text = qsTr("Exit")
-
-                messageDialog.title = qsTr("Close")
-                messageDialog.text = qsTr("Do you want to close the program?")
-                break
-
-            //Polish
-            case 1:
-                selectedAlgorithmText.text = qsTr("Wybrany algorytm: ")
-                confirmButton.text = qsTr("Zatwierdź")
-                confirmButton.ToolTip.text = qsTr("Potwierdź wybór algorytmu")
-                exitButton.text = qsTr("Zakończ")
-
-                messageDialog.title = qsTr("Zakończ")
-                messageDialog.text = qsTr("Czy chcesz zakończyć działanie programu?")
-                break
-            }
-
+            messageDialog.title = qsTr(myArray[4])
+            messageDialog.text = qsTr(myArray[5])
             switchContent(comboBox.currentIndex)
         }
+
+        // function onLangaugeChanged(value){
+
+        //     switch(value){
+
+        //     //English
+        //     case 0:
+
+        //         selectedAlgorithmText.text = qsTr("Selected algorithm: ")
+        //         confirmButton.text = qsTr("Confirm")
+        //         confirmButton.ToolTip.text = qsTr("Confirm your choice of algorithm")
+        //         exitButton.text = qsTr("Exit")
+
+        //         messageDialog.title = qsTr("Close")
+        //         messageDialog.text = qsTr("Do you want to close the program?")
+        //         break
+
+        //     //Polish
+        //     case 1:
+        //         selectedAlgorithmText.text = qsTr("Wybrany algorytm: ")
+        //         confirmButton.text = qsTr("Zatwierdź")
+        //         confirmButton.ToolTip.text = qsTr("Potwierdź wybór algorytmu")
+        //         exitButton.text = qsTr("Zakończ")
+
+        //         messageDialog.title = qsTr("Zakończ")
+        //         messageDialog.text = qsTr("Czy chcesz zakończyć działanie programu?")
+        //         break
+        //     }
+
+        //     switchContent(comboBox.currentIndex)
+        //     //Settings.readFile(0)
+        // }
     }
 
     function switchPage(index) {

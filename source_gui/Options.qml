@@ -87,7 +87,8 @@ Page {
 
                 onClicked:{
                     stackView.clear(); //will go back to Main.qml, dont do push(main.qml)
-                    Settings.refreshLanguage()
+                    Settings.readFile(0);
+                    //Settings.refreshLanguage()
                 }
             }
         }
@@ -98,6 +99,12 @@ Page {
         target: Settings
 
         id: settingsConnection
+
+        function onLoadedPageContent(output){
+            const myArray = output.split("\n");
+            backButton.ToolTip.text = qsTr(myArray[0])
+            backButton.text = qsTr(myArray[1])
+        }
 
         function onLangaugeChanged(value){
             switch(value){
