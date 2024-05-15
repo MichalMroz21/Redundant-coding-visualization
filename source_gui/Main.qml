@@ -249,6 +249,10 @@ Window {
         }
 
         stackView.push(pageSelected);
+        switch(index){
+            case 0: Settings.readFile(2); break;
+            case 1: Settings.readFile(6); break;
+        }
     }
 
     function switchContent(index) {

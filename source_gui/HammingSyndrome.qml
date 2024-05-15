@@ -27,6 +27,7 @@ Page {
         Layout.alignment: Qt.AlignCenter
 
         Text{
+            id: receivedMessageText
             font.pixelSize: 20
             color: "black"
             Layout.alignment: Qt.AlignHCenter
@@ -40,6 +41,7 @@ Page {
         }
 
         Text {
+            id: syndromeText
             font.pixelSize: 20
             color: "black"
             Layout.alignment: Qt.AlignHCenter
@@ -53,6 +55,7 @@ Page {
         }
 
         Text{
+            id: vectorText
             font.pixelSize: 20
             color: "black"
             Layout.alignment: Qt.AlignHCenter
@@ -66,6 +69,7 @@ Page {
         }
 
         Text{
+            id: xorText
             font.pixelSize: 20
             color: "black"
             Layout.alignment: Qt.AlignHCenter
@@ -78,6 +82,7 @@ Page {
         }
 
         Text{
+            id: decodedText
             font.pixelSize: 20
             color: "black"
             Layout.alignment: Qt.AlignHCenter
@@ -90,6 +95,7 @@ Page {
         }
 
         Button {
+            id: mainMenuButton
             Layout.alignment: Qt.AlignHCenter | Qt.AlignBottom
 
             //text: qsTr("Main Menu")
@@ -97,9 +103,27 @@ Page {
 
             onClicked: {
                 stackView.clear();
+                Settings.readFile(0)
             }
         }
 
+    }
+
+    Connections{
+        id: hamSynSettingsCon
+
+        target: Settings
+
+        function onLoadedPageContent(output){
+
+            const myArray = output.split("\n");
+            receivedMessageText.text = qsTr(myArray[0])
+            syndromeText.text = qsTr(myArray[1])
+            vectorText.text = qsTr(myArray[2])
+            xorText.text = qsTr(myArray[3])
+            decodedText.text = qsTr(myArray[4])
+            mainMenuButton.text = qsTr(myArray[5])
+        }
     }
 
     Connections{

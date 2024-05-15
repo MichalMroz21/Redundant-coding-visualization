@@ -150,6 +150,7 @@ Page {
 
             onClicked:{
                 stackView.clear();
+                Settings.readFile(0);
             }
 
             visible: false
@@ -177,6 +178,23 @@ Page {
 
     Timer {
        id: timer
+    }
+
+    Connections{
+        id: reeSolSettingsCon
+
+        target: Settings
+
+        function onLoadedPageContent(output){
+
+            const myArray = output.split("\n");
+            stageTextExt.text = qsTr(myArray[0])
+            //animationDelayText.text = qsTr(myArray[1])
+            animationDelay.ToolTip.text = qsTr(myArray[2])
+            visualiseButton.text = qsTr(myArray[3])
+            mainMenuButton.text = qsTr(myArray[4])
+            nextStepButton.text = qsTr(myArray[5])
+        }
     }
 
     Connections{

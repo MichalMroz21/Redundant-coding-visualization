@@ -105,7 +105,8 @@ Page {
                     id: animationDelayText
                     Layout.alignment: Qt.AlignHCenter
 
-                    text: "Odstępy animacji: " + animationDelay.getValueStr() + " ms"
+                    //text: "Odstępy animacji: " + animationDelay.getValueStr() + " ms"
+                    text: animationDelay.getValueStr() + " ms"
                     font.pixelSize: 20
                 }
 
@@ -167,7 +168,9 @@ Page {
             Layout.margins: root.height / 20
 
             onClicked:{
+                Settings.readFile(0)
                 stackView.clear(); //will go back to Main.qml, dont do push(main.qml)
+
             }
 
             visible: false
@@ -180,8 +183,13 @@ Page {
             text: qsTr("Następny krok")
 
             onClicked: {
-                if (goToSyndrome) stackView.push("HammingSyndrome.qml");
-                else hammingCode.pressButton();
+                if (goToSyndrome) {
+                    stackView.push("HammingSyndrome.qml");
+                    Settings.readFile(5);
+                }
+                else {
+                    hammingCode.pressButton();
+                }
             }
 
             visible: animationDelay.isInfinite && !visualiseButton.visible && !mainMenuButton.visible
@@ -198,6 +206,23 @@ Page {
 
     Timer {
        id: timer
+    }
+
+    Connections{
+        id: hamSettingsCon
+
+        target: Settings
+
+        function onLoadedPageContent(output){
+
+            const myArray = output.split("\n");
+            stageTextExt.text = qsTr(myArray[0]) + (1 + hammingCode.getEncodingExtended()).toString() + qsTr(myArray[1])
+            animationDelayText.text = qsTr(myArray[2])
+            animationDelay.ToolTip.text = qsTr(myArray[3])
+            visualiseButton.text = qsTr(myArray[4])
+            mainMenuButton.text = qsTr(myArray[5])
+            nextStepButton.text = qsTr(myArray[6])
+        }
     }
 
     Connections{
@@ -370,6 +395,7 @@ Page {
         function onEncodingEnd(){
 
             belowText.text = "";
+            //stageText.text = "Correcting errors";
             stageText.text = "Poprawianie błędów";
             stageTextExt.visible = true;
             visualiseButton.visible = true;

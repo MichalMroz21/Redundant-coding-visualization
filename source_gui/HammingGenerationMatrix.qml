@@ -27,6 +27,7 @@ Page {
         Layout.alignment: Qt.AlignCenter
 
         Text{
+            id: controlMatrixText
             font.pixelSize: 20
             color: "black"
             Layout.alignment: Qt.AlignHCenter
@@ -40,6 +41,7 @@ Page {
         }
 
         Text{
+            id: generationMatrixText
             font.pixelSize: 20
             color: "black"
             Layout.alignment: Qt.AlignHCenter
@@ -53,12 +55,14 @@ Page {
         }
 
         Button {
+            id: nextStepButton
             Layout.alignment: Qt.AlignHCenter | Qt.AlignBottom
 
             text: qsTr("Następny krok")
 
             onClicked: {
                 stackView.push("Hamming.qml");
+                Settings.readFile(4)
             }
         }
 
@@ -87,4 +91,19 @@ Page {
         }
 
     }
+
+    Connections{
+        id: hamGenMatSettingsCon
+
+        target: Settings
+
+        function onLoadedPageContent(output){
+
+            const myArray = output.split("\n");
+            controlMatrixText.text = qsTr(myArray[0])
+            generationMatrixText.text = qsTr(myArray[1])
+            nextStepButton.text = qsTr(myArray[2])
+        }
+    }
+
 }

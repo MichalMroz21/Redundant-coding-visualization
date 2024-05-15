@@ -17,7 +17,7 @@ Settings::Settings(QObject *parent) : QObject{parent}{
         this->settings->setValue("Language", "0");
     }
     this->getLanguage();
-    if (this->language < 0 || this->language > 1){
+    if (this->language < 0 || this->language > Settings::availableLanguages::langNum-1){
         //prevent other values than allowed
         this->language = 0;
         this->settings->setValue("Language", "0");
@@ -30,7 +30,7 @@ Settings::Settings(QObject *parent) : QObject{parent}{
  * @param value set language to this
  */
 void Settings::setLanguage(int value){
-    if(value < 0 || value > 1){
+    if(value < 0 || value > Settings::availableLanguages::langNum-1){
         return;
     }
     if (value != this->language) {
