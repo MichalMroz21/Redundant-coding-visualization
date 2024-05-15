@@ -38,15 +38,28 @@ Page {
         }
 
         Button {
+            id: nextStepButton
             Layout.alignment: Qt.AlignHCenter | Qt.AlignBottom
 
             text: qsTr("Następny krok")
 
             onClicked: {
                 stackView.push("ReedSolomon.qml");
+                Settings.readFile(8);
             }
         }
 
+    }
+    Connections{
+        id: galSettingsCon
+
+        target: Settings
+
+        function onLoadedPageContent(output){
+
+            const myArray = output.split("\n");
+            nextStepButton.text = qsTr(myArray[0])
+        }
     }
 
 }

@@ -14,6 +14,33 @@ Page {
         target: hammingCode
     }
 
+    Connections{
+        id: inputHamSettingsCon
+
+        target: Settings
+
+        function onLoadedPageContent(output){
+
+            const myArray = output.split("\n");
+            selectedAlgorithmText.text = qsTr(myArray[0])
+            //delayText.text = qsTr(myArray[1]) + animationDelay.getValueStr() + " ms"
+
+            animationDelay.ToolTip.text = qsTr(myArray[2])
+
+            //workaround for formatted text
+            additionalBit.text = "<font color=\"black\">"
+            additionalBit.text = additionalBit.text.concat(qsTr(myArray[3]))
+            additionalBit.text = additionalBit.text.concat("</font>")
+
+
+            vizualizeButton.ToolTip.text = qsTr(myArray[4])
+            vizualizeButton.text = qsTr(myArray[5])
+            errorMsg.text = qsTr(myArray[6])
+            backButton.ToolTip.text = qsTr(myArray[7])
+            backButton.text = qsTr(myArray[8])
+        }
+    }
+
     background: Rectangle {
         color: "white"
     }
@@ -68,8 +95,9 @@ Page {
 
             Text {
                 Layout.alignment: Qt.AlignHCenter
-
-                text: "Odstępy animacji: " + animationDelay.getValueStr() + " ms"
+                id: delayText
+                //text: "Odstępy animacji: " + animationDelay.getValueStr() + " ms"
+                text: animationDelay.getValueStr() + " ms"
                 font.pixelSize: 20
             }
 
@@ -102,11 +130,9 @@ Page {
                 Layout.alignment: Qt.AlignHCenter
 
                 VisualizeCheckbox{
-
-                    Layout.alignment: Qt.AlignRight
-                    //text: "<font color=\"black\">Dodatkowy bit parity</font>" //yup, the only way to change a color
-                    text: "<font color=\"black\">Dodatkowy bit parzystości</font>" //yup, the only way to change a color
                     id: additionalBit
+                    Layout.alignment: Qt.AlignRight
+                    text: "<font color=\"black\">Dodatkowy bit parzystości</font>" //yup, the only way to change a color
                 }
             }
 
@@ -124,10 +150,12 @@ Page {
                     if(hammingData.text.length > 0){
                         hammingCode.setInitialData(hammingData.text, additionalBit.checked, animationDelay.value, animationDelay.isInfinite);
                         stackView.push("HammingGenerationMatrix.qml");
+                        Settings.readFile(3)
                     }
 
                     else{
-                        errorMsg.text = "Wpisz jakiś ciąg 0 i 1!";
+                        errorMsg.visible = true
+                        //errorMsg.text = "Wpisz jakiś ciąg 0 i 1!";
                     }
                 }
             }
@@ -143,6 +171,7 @@ Page {
 
                 onClicked:{
                     stackView.clear(); //will go back to Main.qml, dont do push(main.qml)
+                    Settings.readFile(0);
                 }
             }
 
@@ -150,6 +179,7 @@ Page {
                 id: errorMsg
                 Layout.alignment: Qt.AlignHCenter
 
+                visible: false
                 text: ""
                 font.pixelSize: 15
                 color: "red"

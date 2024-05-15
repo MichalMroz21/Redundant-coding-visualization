@@ -14,6 +14,27 @@ Page {
         target: reedSolomonCode
     }
 
+    Connections{
+        id: inputReeSolSettingsCon
+
+        target: Settings
+
+        function onLoadedPageContent(output){
+
+            const myArray = output.split("\n");
+            selectedAlgorithmText.text = qsTr(myArray[0])
+            //delayText.text = qsTr(myArray[1]) + animationDelay.getValueStr() + " ms"
+
+            animationDelay.ToolTip.text = qsTr(myArray[2])
+
+            vizualizeButton.ToolTip.text = qsTr(myArray[3])
+            vizualizeButton.text = qsTr(myArray[4])
+            errorMsg.text = qsTr(myArray[5])
+            backButton.ToolTip.text = qsTr(myArray[6])
+            backButton.text = qsTr(myArray[7])
+        }
+    }
+
     background: Rectangle {
         color: "white"
     }
@@ -69,9 +90,11 @@ Page {
             }
 
             Text {
+                id: delayText
                 Layout.alignment: Qt.AlignHCenter
 
-                text: "Odstępy animacji: " + animationDelay.getValueStr() + " ms"
+                //text: "Odstępy animacji: " + animationDelay.getValueStr() + " ms"
+                text: animationDelay.getValueStr() + " ms"
                 font.pixelSize: 20
             }
 
@@ -113,9 +136,11 @@ Page {
                     if(rsData.text.length === 5){
                         reedSolomonCode.setInitialData(rsData.text, animationDelay.value, animationDelay.isInfinite);
                         stackView.push("Galois.qml");
+                        Settings.readFile(7);
                     }
 
                     else{
+                        errorMsg.visible = true
                         errorMsg.text = "Wpisz 5 cyfr!";
                     }
                 }
@@ -132,6 +157,7 @@ Page {
 
                 onClicked:{
                     stackView.clear();
+                    Settings.readFile(0);
                 }
             }
 
@@ -139,6 +165,7 @@ Page {
                 id: errorMsg
                 Layout.alignment: Qt.AlignHCenter
 
+                visible: false
                 text: ""
                 font.pixelSize: 15
                 color: "red"
