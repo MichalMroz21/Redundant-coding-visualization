@@ -108,6 +108,8 @@ public slots:
     void encodeDataAsync(bool forQML);
     void encodeData(bool forQML);
     void sendCode(QString sent);
+    Poly getRemainder(QString data);
+    int getRet(int n, int* coef);
 
     int getAnimationDelayMs() const;
     QString getDataEncoded() const;
