@@ -368,7 +368,7 @@ void HammingCode::encodeDataAsync(bool forQML){
             emit turnBitOn(0, dataPtr, "light blue");
 
             if(!isParity) {
-                emit turnBitOn(1, i, "light green");
+                emit turnBitOn(1, i, "green");
                 emit setBit(1, i, dataBit ? "1" : "0");
             }
 
@@ -436,7 +436,7 @@ void HammingCode::encodeDataAsync(bool forQML){
             emit setBelowText(QString(initialText).arg(xorVal));
             this->waitForQml();
 
-            emit turnBitOn(0, i - 1, "light green");
+            emit turnBitOn(0, i - 1, "green");
             emit setBit(0, i - 1, xorVal ? "1" : "0");
 
             this->waitForQml();
