@@ -7,6 +7,21 @@
 ReedSolomonCode::ReedSolomonCode(QObject *parent) : QObject{parent}, gf(fieldPower) {
 }
 
+Poly ReedSolomonCode::getRemainder(QString data)
+{
+    this->data = data;
+    for (int i = 0; i < data.length(); i++)
+    {
+        this->dataArr[i] = data.at(i).toLatin1() - '0';
+    }
+    Poly msg(this->k, this->dataArr);
+    Poly generator, remainder;
+    this->createGenerator(&generator, true);
+    Poly_Pad(&msg, 0, nsym);
+    Poly_Div(nullptr, nullptr, &remainder, &msg, &generator, &this->gf);
+    return remainder;
+}
+
 void ReedSolomonCode::setInitialData(QString data, int animationDelay, bool infiniteWait)
 {
     assert(data.length() == this->k);
@@ -91,6 +106,32 @@ void ReedSolomonCode::correctErrorQml() {
     static_cast<void>(QtConcurrent::run([=, this](){
         correctError(true);
     }));
+}
+
+int ReedSolomonCode::getRet(int n, int* coef)
+{
+    Poly synd;
+    Poly msg(n, coef);
+    this->calcSyndromes(&synd, &msg, false);
+
+    int ret;
+
+    Poly fsynd, errLoc;
+    this->forneySyndromes(&fsynd, &synd, k + nsym);
+    bool canLocate1 = this->findErrorLocator(&errLoc, &fsynd, false);
+
+    std::vector<unsigned int> pos;
+    bool canLocate2 = this->findErrors(&pos, &errLoc, k + nsym, false);
+    //for_each(pos.begin(), pos.end(), [](unsigned int e) {qInfo() << (int)e << ", "; });
+
+    if (pos.size())
+    {
+        ret = pos[0];
+    }
+
+    bool success = this->correctErrata(&msg, &synd, &pos, false);
+
+    return ret;
 }
 
 int ReedSolomonCode::correctError(bool forQML)
@@ -388,9 +429,15 @@ bool ReedSolomonCode::correctErrata(Poly* msg, Poly* synd, std::vector<unsigned 
     }
     Poly errLoc, errEval;
     this->findErrataLocator(&errLoc, &coefPos, forQML);
-    qInfo() << "Errata locator: " << errLoc.toString();
+    if (forQML)
+    {
+        qInfo() << "Errata locator: " << errLoc.toString();
+    }
     this->findErrorEvaluator(&errEval, synd, &errLoc, errLoc.n, forQML);
-    qInfo() << "Evaluator: " << errEval.toString();
+    if (forQML)
+    {
+        qInfo() << "Evaluator: " << errEval.toString();
+    }
     //Poly_Reverse(errEval, errEval); //reverse it for later use
     std::vector<int> x(coefPos.size());
     for (int i = 0; i < x.size(); i++)
