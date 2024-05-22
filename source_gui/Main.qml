@@ -188,6 +188,10 @@ Window {
         switchContent(0);
     }
 
+    function onWindowClosing() {
+        Qt.quit();
+    }
+
     Connections{
         id: mainSettingsCon
 
