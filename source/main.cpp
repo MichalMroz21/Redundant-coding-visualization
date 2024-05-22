@@ -41,6 +41,8 @@ int main(int argc, char *argv[])
         Qt::QueuedConnection);
     engine.load(url);
 
+    // QGuiApplication::setQuitOnLastWindowClosed(true);
+
     //emit settings.langaugeChanged(settings.getLanguage());
     emit settings.readFile(0);
 
