@@ -88,7 +88,8 @@ private:
 
     QBitArray data{}, receivedCode{};
     int p{}, m{}, animationDelayMs{};
-    bool encodingExtended = false, infiniteWait = false, buttonPressed = false;
+    bool encodingExtended = false;
+    volatile bool infiniteWait = false, buttonPressed = false;
     QString encodedString{}, error{}, syndrome{};
     QVector<QString> symbols;
 

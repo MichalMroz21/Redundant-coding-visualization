@@ -151,7 +151,7 @@ private:
     QString data{}, receivedCode{}, dataEncoded{};
     int dataArr[k], receivedCodeArr[total], dataEncodedArr[total];
     int animationDelayMs{};
-    bool infiniteWait = false, buttonPressed = false;
+    volatile bool infiniteWait = false, buttonPressed = false;
     GaloisField gf;
 
     void waitForQml();
