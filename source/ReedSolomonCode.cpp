@@ -483,7 +483,7 @@ bool ReedSolomonCode::correctErrata(Poly* msg, Poly* synd, std::vector<unsigned 
         e.coef[errPos->at(i)] = this->gf.div(y, errLocPrime); //magnitude
         if (forQML)
         {
-            emit setBelowText("Wielkość błędu = y / errLocPrime");
+            emit setBelowText("Wielkość błędu = y / err_loc_prime");
             emit setBelowTextExtended(QString("Wielkość błędu = %1 / %2 = %3").arg(y).arg(errLocPrime).arg(e.coef[errPos->at(i)]));
             this->waitForQml();
         }
