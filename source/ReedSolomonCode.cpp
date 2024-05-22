@@ -36,9 +36,9 @@ void ReedSolomonCode::setInitialData(QString data, int animationDelay, bool infi
 
 void ReedSolomonCode::encodeData(bool forQML)
 {
-
     if(forQML)
     {
+        this->finished = false;
         static_cast<void>(QtConcurrent::run([=, this](){
             encodeDataAsync(forQML);
         }));
@@ -100,9 +100,11 @@ void ReedSolomonCode::encodeDataAsync(bool forQML)
     }
 
     if (forQML) emit encodingEnd();
+    this->finished = true;
 }
 
 void ReedSolomonCode::correctErrorQml() {
+    this->finished = false;
     static_cast<void>(QtConcurrent::run([=, this](){
         correctError(true);
     }));
@@ -226,7 +228,7 @@ int ReedSolomonCode::correctError(bool forQML)
         qInfo() << "Poprawiono błędy";
     }
     if(forQML) emit endErrorCorrection();
-
+    this->finished = true;
     return ret;
 }
 
@@ -245,11 +247,20 @@ void ReedSolomonCode::setInfiniteWait(bool value)
     this->infiniteWait = value;
 }
 
+void ReedSolomonCode::quit() {
+    this->animationDelayMs = 0;
+    this->shouldQuit = true;
+}
+
+bool ReedSolomonCode::isFinished() {
+    return this->finished;
+}
+
 void ReedSolomonCode::waitForQml()
 {
     if (this->infiniteWait)
     {
-        while (!this->buttonPressed && this->infiniteWait);
+        while (!this->buttonPressed && this->infiniteWait && !this->shouldQuit);
         this->buttonPressed = false;
     }
     else

@@ -118,6 +118,9 @@ public slots:
     void setInfiniteWait(bool value);
 
     void pressButton();
+
+    void quit();
+    bool isFinished();
 signals:
 
     void turnBitOn(int arrIndex, int index, QString color = "");
@@ -151,7 +154,7 @@ private:
     QString data{}, receivedCode{}, dataEncoded{};
     int dataArr[k], receivedCodeArr[total], dataEncodedArr[total];
     int animationDelayMs{};
-    volatile bool infiniteWait = false, buttonPressed = false;
+    volatile bool infiniteWait = false, buttonPressed = false, shouldQuit = false, finished = true;
     GaloisField gf;
 
     void waitForQml();

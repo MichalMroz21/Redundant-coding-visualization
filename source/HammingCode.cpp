@@ -189,6 +189,7 @@ int HammingCode::correctErrorExtended(bool forQML)
     }
 
     if(forQML) emit endErrorCorrection(C, P);
+    this->finished = true;
     return ret;
 }
 
@@ -283,6 +284,7 @@ int HammingCode::correctErrorStandard(bool forQML)
     }
 
     if(forQML) emit endErrorCorrection(C, -1);
+    this->finished = true;
     return ret;
 }
 
@@ -290,6 +292,7 @@ int HammingCode::correctErrorStandard(bool forQML)
 int HammingCode::correctError(bool forQML)
 {
     if(forQML){
+        this->finished = false;
         if(this->encodingExtended){
             static_cast<void>(QtConcurrent::run([=, this](){
                 correctErrorExtended(forQML);
@@ -332,6 +335,7 @@ bool HammingCode::isPowerTwo(int n){
 void HammingCode::encodeData(bool forQML){
 
     if(forQML){
+        this->finished = false;
         static_cast<void>(QtConcurrent::run([=, this](){
             encodeDataAsync(forQML);
         }));
@@ -509,6 +513,7 @@ void HammingCode::encodeDataAsync(bool forQML){
     else data = dataEncoded; //just copy the rest without extending the bit
 
     if(forQML) emit encodingEnd();
+    this->finished = true;
 }
 
 QString HammingCode::getDataStr()
@@ -565,10 +570,19 @@ void HammingCode::setInfiniteWait(bool value)
     this->infiniteWait = value;
 }
 
+void HammingCode::quit() {
+    this->animationDelayMs = 0;
+    this->shouldQuit = true;
+}
+
+bool HammingCode::isFinished() {
+    return this->finished;
+}
+
 void HammingCode::waitForQml()
 {
     if (this->infiniteWait) {
-        while (!this->buttonPressed && this->infiniteWait);
+        while (!this->buttonPressed && this->infiniteWait && !this->shouldQuit);
         this->buttonPressed = false;
     }
     else

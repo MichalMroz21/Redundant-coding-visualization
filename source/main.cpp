@@ -13,6 +13,7 @@
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
+    app.setQuitOnLastWindowClosed(true);
 
     auto debugInterceptor = DebugInterceptor::getInstance();
     auto hammingCode = QSharedPointer<HammingCode>(new HammingCode());
@@ -41,10 +42,14 @@ int main(int argc, char *argv[])
         Qt::QueuedConnection);
     engine.load(url);
 
-    QGuiApplication::setQuitOnLastWindowClosed(true);
-
     //emit settings.langaugeChanged(settings.getLanguage());
     emit settings.readFile(0);
 
-    return app.exec();
+    int value = app.exec();
+    // ze względu na QtConcurrent::run bez tego po zamknięciu aplikacji zostają wątki, które nigdy się nie kończą i zostaje proces zombie w systemie
+    while (!hammingCode->isFinished())
+        hammingCode->quit();
+    while (!reedSolomonCode->isFinished())
+        reedSolomonCode->quit();
+    return value;
 }
