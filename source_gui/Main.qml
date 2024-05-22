@@ -188,6 +188,7 @@ Window {
         switchContent(0);
     }
 
+
     Connections{
         id: mainSettingsCon
 

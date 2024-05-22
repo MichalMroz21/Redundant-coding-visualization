@@ -19,6 +19,8 @@ public:
 
     bool isPowerTwo(int n);
 
+    void quit();
+    bool isFinished();
 public slots:
 
     int calculateP();
@@ -88,7 +90,8 @@ private:
 
     QBitArray data{}, receivedCode{};
     int p{}, m{}, animationDelayMs{};
-    bool encodingExtended = false, infiniteWait = false, buttonPressed = false;
+    bool encodingExtended = false;
+    volatile bool infiniteWait = false, buttonPressed = false, shouldQuit = false, finished = true;
     QString encodedString{}, error{}, syndrome{};
     QVector<QString> symbols;
 

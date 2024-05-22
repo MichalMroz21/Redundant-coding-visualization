@@ -37,8 +37,8 @@ Page {
 
         Text{
             id: stageText
-            topPadding: root.height / 8
-            font.pixelSize: 26
+            topPadding: root.height / 16
+            font.pixelSize: 40
             color: "black"
             Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
         }
@@ -60,6 +60,7 @@ Page {
 
             Layout.alignment: Qt.AlignHCenter
 
+            topPadding: 20
             visible: false
             Layout.fillHeight: true
         }
@@ -88,8 +89,12 @@ Page {
                             anchors.fill: parent
                             hoverEnabled: true
                             onEntered: {
-                                if (wordsWithTooltips[textItem.text]) { // wyświetla tooltip tylko nad określonymi słowami
+                                // wyświetla tooltip tylko nad określonymi słowami
+                                if (wordsWithTooltips[textItem.text]) {
                                     tooltip.text = wordsWithTooltips[textItem.text]
+                                    tooltip.show(textItem.mapToItem(null, 0, 0))
+                                } else if (textItem.text && textItem.text === "coef_pos)") { // obejście
+                                    tooltip.text = wordsWithTooltips["coef_pos"]
                                     tooltip.show(textItem.mapToItem(null, 0, 0))
                                 }
                             }
@@ -194,7 +199,13 @@ Page {
             id: tooltip
             visible: false
             delay: 100
+            font.italic: true
+
             font.pixelSize: 30
+            background: Rectangle {
+                color: "white"
+            }
+
             timeout: 3000
             width: Math.min(parent.width / 2, contentWidth)
 
