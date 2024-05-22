@@ -10,6 +10,14 @@ Page {
     visible: true
     id: reedSolomonPage
 
+    property var wordsWithTooltips: {
+        "coef_pos": "Pozycja błędu liczona od końca od 0",
+        "errata_locator": "Wielomian używany do identyfikacji lokalizacji zarówno błędów, jak i korekt w przesyłanym słowie kodowym",
+        "error_evaluator": "Wielomian używany do obliczenia wartości błędów w miejscach zidentyfikowanych przez wielomian lokalizatora błędów",
+        "err_loc_prime": "Formalna pochodna wielomianu lokalizatora błędów używana w algorytmie Forneya do obliczania magnitudy błędów",
+        "Lokator": "Wielomian używany do identyfikacji pozycji błędów (i tylko błędów) w przesyłanym słowie kodowym"
+    }
+
     background: Rectangle {
         color: "white"
     }
@@ -56,14 +64,40 @@ Page {
             Layout.fillHeight: true
         }
 
-        Text{
-            id: belowText
-            anchors.horizontalCenter: parent.horizontalCenter
-            font.pixelSize: 40
-            color: "black"
-            text: ""
+        Row {
+            spacing: 10 // wielkość spacji między słowami
             Layout.alignment: Qt.AlignHCenter
             Layout.fillHeight: true
+            Repeater {
+                id: belowText
+                model: []
+                anchors.horizontalCenter: parent.horizontalCenter
+                Layout.alignment: Qt.AlignHCenter
+                Layout.fillHeight: true
+
+                Item {
+                    width: textItem.implicitWidth
+                    height: textItem.implicitHeight
+
+                    Text {
+                        id: textItem
+                        text: modelData
+                        font.pixelSize: 40
+                        color: "black"
+                        MouseArea {
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            onEntered: {
+                                if (wordsWithTooltips[textItem.text]) { // wyświetla tooltip tylko nad określonymi słowami
+                                    tooltip.text = wordsWithTooltips[textItem.text]
+                                    tooltip.show(textItem.mapToItem(null, 0, 0))
+                                }
+                            }
+                            onExited: tooltip.hide()
+                        }
+                    }
+                }
+            }
         }
 
         Text{
@@ -154,6 +188,24 @@ Page {
             }
 
             visible: false
+        }
+
+        ToolTip {
+            id: tooltip
+            visible: false
+            delay: 100
+            font.pixelSize: 30
+            timeout: 3000
+            width: Math.min(parent.width / 2, contentWidth)
+
+            function show(pos) {
+                x = pos.x
+                y = pos.y - height - 10
+                visible = true
+            }
+            function hide() {
+                visible = false
+            }
         }
 
         Button {
@@ -312,7 +364,7 @@ Page {
         }
 
         function onSetBelowText(str){
-            belowText.text = str;
+            belowText.model = str.split(" ");
         }
 
         function onSetBelowTextExtended(str) {
@@ -332,7 +384,7 @@ Page {
         function onEncodingEnd(){
 
             belowTextExtended.text = "";
-            belowText.text = "";
+            onSetBelowText("");
             stageText.text = "Poprawianie błędów";
             stageTextExt.visible = true;
             visualiseButton.visible = true;

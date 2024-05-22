@@ -77,7 +77,7 @@ void ReedSolomonCode::encodeDataAsync(bool forQML)
         Poly_Reverse(&msgRev, &msg);
         Poly genRev;
         Poly_Reverse(&genRev, &generator);
-        emit setBelowText(QString("wiadomość / wielomian generujący. = ? + (bx + a)"));
+        emit setBelowText(QString("wiadomość / wielomian generujący = ? + (bx + a)"));
         emit setBelowTextExtended(QString("(%1) / (%2) = ? + (%3)")
                                       .arg(msgRev.toString())
                                       .arg(genRev.toString())
@@ -335,7 +335,7 @@ void ReedSolomonCode::calcSyndromes(Poly* out, Poly* msg, bool forQML)
         QString text = QString("(%1)(%2)").arg(msg->toString()).arg(this->gf.powTable[i]);
         if (forQML)
         {
-            QString belowText = QString("Liczenie syndromu nr %1\r\nWartość wiadomości w punkcie α%2").arg(i + 1).arg(i);
+            QString belowText = QString("Liczenie syndromu nr %1 - Wartość wiadomości w punkcie α%2").arg(i + 1).arg(i);
             emit setBelowText(belowText);
             emit setBelowTextExtended(text);
             this->waitForQml();
@@ -382,7 +382,7 @@ void ReedSolomonCode::findErrataLocator(Poly* out, std::vector<unsigned int>* er
         Poly_Mult(out, out, &factor, &this->gf);
         if (forQML)
         {
-            emit setBelowText("errata locator = 1x + 2^coefPos");
+            emit setBelowText("errata_locator = 1x + 2 ^ coef_pos");
             emit setBelowTextExtended(QString("1x + 2^%1 = %2").arg(i).arg(out->toString()));
             this->waitForQml();
         }
@@ -394,14 +394,14 @@ void ReedSolomonCode::findErrorEvaluator(Poly* out, Poly* synd, Poly* errLoc, in
 
     Poly_Mult(out, synd, errLoc, &this->gf); //synd lul
     {
-        emit setBelowText("syndrom * errata locator = error evaluator * x^2 + bx + c");
+        emit setBelowText("syndrom * errata_locator = error_evaluator * x^2 + bx + c");
         emit setBelowTextExtended(QString("(%1) * (%2) = %3").arg(synd->toString()).arg(errLoc->toString()).arg(out->toString()));
         this->waitForQml();
     }
     Poly_Trim(out, out->n - nsym, 0);
     if (forQML)
     {
-        emit setBelowText("error evaluator");
+        emit setBelowText("error_evaluator");
         emit setBelowTextExtended(QString("%1").arg(out->toString()));
         this->waitForQml();
     }
@@ -422,8 +422,8 @@ bool ReedSolomonCode::correctErrata(Poly* msg, Poly* synd, std::vector<unsigned 
         if (forQML)
         {
             emit setTopText("Szukanie wielkości błędu");
-            emit setBelowText("coefPos - pozycja błędu liczona od końca od 0");
-            emit setBelowTextExtended(QString("coefPos = %1").arg(msg->n - 1 - i));
+            emit setBelowText("coef_pos - pozycja błędu liczona od końca od 0");
+            emit setBelowTextExtended(QString("coef_pos = %1").arg(msg->n - 1 - i));
             this->waitForQml();
         }
     }
@@ -450,7 +450,7 @@ bool ReedSolomonCode::correctErrata(Poly* msg, Poly* synd, std::vector<unsigned 
         int xi = this->gf.powTable[this->gf.characteristic - coefPos[i]];
         if (forQML)
         {
-            emit setBelowText("xi = 2^(charakterystyka GF - coefPos)");
+            emit setBelowText("xi = 2^(charakterystyka GF - coef_pos)");
             emit setBelowTextExtended(QString("xi = 2^(%1 - %2) = %3").arg(this->gf.characteristic).arg(coefPos[i]).arg(xi));
             this->waitForQml();
         }
@@ -468,7 +468,7 @@ bool ReedSolomonCode::correctErrata(Poly* msg, Poly* synd, std::vector<unsigned 
         }
         if (forQML)
         {
-            emit setBelowText(QString("errLocPrime = %1").arg(errLocPrime));
+            emit setBelowText(QString("err_loc_prime = %1").arg(errLocPrime));
             emit setBelowTextExtended("");
             this->waitForQml();
         }
@@ -476,7 +476,7 @@ bool ReedSolomonCode::correctErrata(Poly* msg, Poly* synd, std::vector<unsigned 
         int y = this->gf.mult(x[i], eval);
         if (forQML)
         {
-            emit setBelowText(QString("y = 2^coefPos * error evaluator").arg(errLocPrime));
+            emit setBelowText(QString("y = 2 ^ coef_pos * error_evaluator").arg(errLocPrime));
             emit setBelowTextExtended(QString("y = 2^%1 * %2").arg(x[i]).arg(eval));
             this->waitForQml();
         }
