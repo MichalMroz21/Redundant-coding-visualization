@@ -206,7 +206,7 @@ Page {
                 color: "white"
             }
 
-            timeout: 3000
+            // timeout: 3000
             width: Math.min(parent.width / 2, contentWidth)
 
             function show(pos) {
