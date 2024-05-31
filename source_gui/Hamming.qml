@@ -4,6 +4,7 @@ import QtQuick.Layouts 6.3
 
 import "VisualizeComponents"
 
+
 Page {
     width: root.width
     height: root.height
@@ -12,6 +13,11 @@ Page {
 
     background: Rectangle {
         color: "white"
+    }
+
+    QtObject {
+        id: translationArray
+        property var ar: []
     }
 
     ColumnLayout {
@@ -32,6 +38,7 @@ Page {
             id: stageText
             topPadding: root.height / 8
             font.pixelSize: 26
+            text: ""
             color: "black"
             Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
         }
@@ -214,14 +221,14 @@ Page {
         target: Settings
 
         function onLoadedPageContent(output){
-
-            const myArray = output.split("\n");
-            stageTextExt.text = qsTr(myArray[0]) + (1 + hammingCode.getEncodingExtended()).toString() + qsTr(myArray[1])
-            animationDelayText.text = qsTr(myArray[2])
-            animationDelay.ToolTip.text = qsTr(myArray[3])
-            visualiseButton.text = qsTr(myArray[4])
-            mainMenuButton.text = qsTr(myArray[5])
-            nextStepButton.text = qsTr(myArray[6])
+            translationArray.ar = output.split("\n");
+            stageText.text = qsTr(translationArray.ar[7])
+            stageTextExt.text = qsTr(translationArray.ar[0]) + (1 + hammingCode.getEncodingExtended()).toString() + qsTr(translationArray.ar[1])
+            animationDelayText.text = qsTr(translationArray.ar[2])
+            animationDelay.ToolTip.text = qsTr(translationArray.ar[3])
+            visualiseButton.text = qsTr(translationArray.ar[4])
+            mainMenuButton.text = qsTr(translationArray.ar[5])
+            nextStepButton.text = qsTr(translationArray.ar[6])
         }
     }
 
@@ -382,6 +389,19 @@ Page {
             belowTextExtended.text = str;
         }
 
+        function onSetBelowTextTranslation(text, array){
+            belowText.text = translationArray.ar[text] + array.join("");
+        }
+
+        function onSetBelowTextExtendedTranslation(text, array) {
+            belowTextExtended.text = translationArray.ar[text] + array.join("");
+        }
+
+        function onSetBelowTextTranslationColorized(color, text, array){
+            //make sure to write "</font> in array at the desired position
+            belowText.text = "<font color=\"" + color + "\">" + translationArray.ar[text] + array.join("");
+        }
+
         function onSetClickAllow(arrIndex, isAllowed){
             arrays[arrIndex].clickChange = isAllowed;
         }
@@ -396,7 +416,8 @@ Page {
 
             belowText.text = "";
             //stageText.text = "Correcting errors";
-            stageText.text = "Poprawianie błędów";
+            stageText.text = qsTr(translationArray.ar[8]);
+            //stageText.text = "Poprawianie błędów";
             stageTextExt.visible = true;
             visualiseButton.visible = true;
 
@@ -408,7 +429,7 @@ Page {
             onSetClickAllow(0, false);
 
             //stageText.text = "Finding error(s)...";
-            stageText.text = "Znajdowanie błędu/ów...";
+            stageText.text = qsTr(translationArray.ar[9]);
             stageTextExt.visible = false;
             visualiseButton.visible = false;
 
