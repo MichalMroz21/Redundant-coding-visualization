@@ -83,6 +83,10 @@ signals:
     void setBelowTextExtended(QString str);
     void setClickAllow(int arrIndex, bool isAllowed);
 
+    void setBelowTextTranslation(int text, QStringList strings);
+    void setBelowTextExtendedTranslation(int text, QStringList strings);
+    void setBelowTextTranslationColorized(QString color, int text, QStringList strings);
+
     void encodingEnd();
     void endErrorCorrection(int C, int P);
 

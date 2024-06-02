@@ -135,6 +135,8 @@ signals:
     void setBit(int arrIndex, int index, QString bit);
     void setTopText(QString text);
 
+    void setTopTextTranslation(int text, QStringList strings);
+
     void insertEmptyBit(int arrIndex, int index);
     void insertBit(int arrIndex, int index, QString bit, bool showSymbols);
 
@@ -143,6 +145,11 @@ signals:
     void setBelowText(QString str);
     void setBelowTextExtended(QString str);
     void setClickAllow(int arrIndex, bool isAllowed);
+
+    void setBelowTextTranslation(int text, QStringList strings);
+    void setBelowTextExtendedTranslation(int text, QStringList strings);
+    void setBelowTextTranslationColorized(QString color, int text, QStringList strings);
+    void setBelowTextCalcSyndromes(int i, int j);
 
     void encodingEnd();
     void endErrorCorrection();

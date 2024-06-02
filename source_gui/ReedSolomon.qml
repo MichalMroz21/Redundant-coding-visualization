@@ -11,11 +11,16 @@ Page {
     id: reedSolomonPage
 
     property var wordsWithTooltips: {
-        "coef_pos": "Pozycja błędu liczona od końca od 0",
-        "errata_locator": "Wielomian używany do identyfikacji lokalizacji zarówno błędów, jak i korekt w przesyłanym słowie kodowym",
-        "error_evaluator": "Wielomian używany do obliczenia wartości błędów w miejscach zidentyfikowanych przez wielomian lokalizatora błędów",
-        "err_loc_prime": "Formalna pochodna wielomianu lokalizatora błędów używana w algorytmie Forneya do obliczania magnitudy błędów",
-        "Lokator": "Wielomian używany do identyfikacji pozycji błędów (i tylko błędów) w przesyłanym słowie kodowym"
+        "coef_pos": translationArray.ar[37],
+        "errata_locator": translationArray.ar[38],
+        "error_evaluator": translationArray.ar[39],
+        "err_loc_prime": translationArray.ar[40],
+        "Locator": translationArray.ar[41]
+    }
+
+    QtObject {
+        id: translationArray
+        property var ar: []
     }
 
     background: Rectangle {
@@ -95,6 +100,10 @@ Page {
                                     tooltip.show(textItem.mapToItem(null, 0, 0))
                                 } else if (textItem.text && textItem.text === "coef_pos)") { // obejście
                                     tooltip.text = wordsWithTooltips["coef_pos"]
+                                    tooltip.show(textItem.mapToItem(null, 0, 0))
+                                }
+                                else if (textItem.text && textItem.text === "Lokator") { // tłumaczenie
+                                    tooltip.text = wordsWithTooltips["Locator"]
                                     tooltip.show(textItem.mapToItem(null, 0, 0))
                                 }
                             }
@@ -250,13 +259,14 @@ Page {
 
         function onLoadedPageContent(output){
 
-            const myArray = output.split("\n");
-            stageTextExt.text = qsTr(myArray[0])
-            //animationDelayText.text = qsTr(myArray[1])
-            animationDelay.ToolTip.text = qsTr(myArray[2])
-            visualiseButton.text = qsTr(myArray[3])
-            mainMenuButton.text = qsTr(myArray[4])
-            nextStepButton.text = qsTr(myArray[5])
+            translationArray.ar = output.split("\n");
+            stageTextExt.text = qsTr(translationArray.ar[0])
+            animationDelayText.text = qsTr(translationArray.ar[1])
+            animationDelay.ToolTip.text = qsTr(translationArray.ar[2])
+            visualiseButton.text = qsTr(translationArray.ar[3])
+            mainMenuButton.text = qsTr(translationArray.ar[4])
+            nextStepButton.text = qsTr(translationArray.ar[5])
+            stageText.text = qsTr(translationArray.ar[6])
         }
     }
 
@@ -345,6 +355,10 @@ Page {
             stageText.text = text
         }
 
+        function onSetTopTextTranslation(text, array) {
+            stageText.text = translationArray.ar[text] + array.join("");
+        }
+
         function onInsertBit(arrIndex, index, bit, showSymbols){
             var bitStr = getArrayStr(arrIndex);
 
@@ -382,6 +396,25 @@ Page {
             belowTextExtended.text = str;
         }
 
+        function onSetBelowTextTranslation(text, array){
+            belowText.model = (translationArray.ar[text] + array.join("")).split(" ");
+        }
+
+        function onSetBelowTextExtendedTranslation(text, array) {
+            belowTextExtended.text = translationArray.ar[text] + array.join("");
+        }
+
+        function onSetBelowTextTranslationColorized(color, text, array){
+            //make sure to write "</font> in array at the desired position
+            belowText.model = ("<font color=\"" + color + "\">" + translationArray.ar[text] + array.join("")).split(" ");
+        }
+
+        function onSetBelowTextCalcSyndromes(i, j){
+            //calcSyndromes1 + i + " - " + calcSyndromes2 + j
+            //see language pack - reedSolomonPage at the 20th and 21st indexes
+            belowText.model = (translationArray.ar[21] + i + " - " + translationArray.ar[22] + j).split(" ");
+        }
+
         function onSetClickAllow(arrIndex, isAllowed){
             arrays[arrIndex].clickChange = isAllowed;
         }
@@ -396,7 +429,8 @@ Page {
 
             belowTextExtended.text = "";
             onSetBelowText("");
-            stageText.text = "Poprawianie błędów";
+            //stageText.text = "Poprawianie błędów";
+            stageText.text = translationArray.ar[7];
             stageTextExt.visible = true;
             visualiseButton.visible = true;
             arrays[0].myArr = reedSolomonCode.getDataEncoded();
@@ -408,7 +442,8 @@ Page {
             onSetClickAllow(0, false);
 
             //stageText.text = "Finding error(s)...";
-            stageText.text = "Znajdowanie błędu/ów...";
+            //stageText.text = "Znajdowanie błędu/ów...";
+            stageText.text = translationArray.ar[8];
             stageTextExt.visible = false;
             visualiseButton.visible = false;
 
