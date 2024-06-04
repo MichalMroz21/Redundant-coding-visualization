@@ -80,7 +80,7 @@ Page {
                     }
                 }
 
-                validator: RegularExpressionValidator {regularExpression: /^[0-8]{0,5}$/}
+                validator: RegularExpressionValidator {regularExpression: /^[0-7]{0,5}$/}
 
                 onTextChanged: {
                     if(length > maxLength) remove(maxLength, length);

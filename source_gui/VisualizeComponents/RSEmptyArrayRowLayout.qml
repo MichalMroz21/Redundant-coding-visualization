@@ -45,6 +45,7 @@ RowLayout{
                     if(parent.parent.changedArr[index] === false){
                         if (parent.parent.currentChanged >= parent.parent.changeLimit) return;
                         parent.children[0].text = newChar
+                        parent.children[0].color = "red";
                         parent.parent.currentChanged += 1;
                         parent.parent.changedArr[index] = true;
                     }
@@ -54,6 +55,7 @@ RowLayout{
 
                         if (parent.parent.myArr.charAt(index) === parent.children[0].text[0])
                         {
+                            parent.children[0].color = "black";
                             parent.parent.currentChanged -= 1;
                             parent.parent.changedArr[index] = false;
                         }
