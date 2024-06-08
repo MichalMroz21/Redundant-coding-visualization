@@ -66,7 +66,6 @@ void ReedSolomonCode::encodeDataAsync(bool forQML)
         {
             emit setBit(0, i, QChar('a' + i - k));
         }
-        //emit setBelowText("Przepisanie danych wejściowych");
         emit setBelowTextTranslation(9, {""});
         emit setBelowTextExtended("");
         this->waitForQml();
@@ -78,7 +77,6 @@ void ReedSolomonCode::encodeDataAsync(bool forQML)
         Poly_Reverse(&msgRev, &msg);
         Poly genRev;
         Poly_Reverse(&genRev, &generator);
-        //emit setBelowText(QString("wiadomość / wielomian generujący = ? + (bx + a)"));
         emit setBelowTextExtended(QString("(%1) / (%2) = ? + (%3)")
                                       .arg(msgRev.toString())
                                       .arg(genRev.toString())
@@ -126,7 +124,6 @@ int ReedSolomonCode::getRet(int n, int* coef)
 
     std::vector<unsigned int> pos;
     bool canLocate2 = this->findErrors(&pos, &errLoc, k + nsym, false);
-    //for_each(pos.begin(), pos.end(), [](unsigned int e) {qInfo() << (int)e << ", "; });
 
     if (pos.size())
     {
@@ -149,7 +146,6 @@ int ReedSolomonCode::correctError(bool forQML)
     {
         if (forQML)
         {
-            //emit setBelowText("Wszystkie syndromy są równe 0 - nie znaleziono błędu");
             emit setBelowTextTranslation(11, {""});
         }
         ret = -1;
@@ -158,7 +154,6 @@ int ReedSolomonCode::correctError(bool forQML)
     {
         if (forQML)
         {
-            //emit setBelowText("Nie wszystkie syndromy są równe 0 - występują błędy");
             emit setBelowTextTranslation(12, {""});
             this->waitForQml();
         }
@@ -171,7 +166,6 @@ int ReedSolomonCode::correctError(bool forQML)
             qInfo() << "Zbyt dużo błędów do znalezienia!";
             if (forQML)
             {
-                //emit setBelowText("Zbyt dużo błędów do znalezienia!");
                 emit setBelowTextTranslation(13, {""});
                 emit endErrorCorrection();
             }
@@ -181,8 +175,6 @@ int ReedSolomonCode::correctError(bool forQML)
         {
             Poly revErrLoc;
             Poly_Reverse(&revErrLoc, &errLoc);
-            //emit setBelowText("Wielomian wykrycia błędów znaleziony algorytmem Berlekamp-Masseya");
-
             emit setBelowTextTranslation(14, {""});
             emit setBelowTextExtended(revErrLoc.toString());
             this->waitForQml();
@@ -194,7 +186,6 @@ int ReedSolomonCode::correctError(bool forQML)
             qInfo() << "Nie udało się znaleźć błędów!";
             if (forQML)
             {
-                //emit setBelowText("Nie udało się znaleźć błędów!");
                 emit setBelowTextTranslation(15, {""});
                 emit endErrorCorrection();
             }
@@ -207,7 +198,6 @@ int ReedSolomonCode::correctError(bool forQML)
             ret = pos[0];
             if (forQML)
             {
-                //emit setBelowText(QString("Pozycja błędu znaleziona przez algorytm Chien: %1").arg(ret + 1));
                 emit setBelowTextTranslation(16, {QString::number(ret + 1)});
                 emit setBelowTextExtended("");
                 this->waitForQml();
@@ -219,7 +209,6 @@ int ReedSolomonCode::correctError(bool forQML)
             qInfo() << "Nie udało się zdekodować!";
             if (forQML)
             {
-                //emit setBelowText("Nie udało się zdekodować!");
                 emit setBelowTextTranslation(17, {""});
                 emit endErrorCorrection();
             }
@@ -232,9 +221,6 @@ int ReedSolomonCode::correctError(bool forQML)
         }
         if (forQML)
         {
-            //emit setBelowText(QString("Znaleziono błąd na pozycji %1").arg(ret + 1));
-            //emit setBelowTextExtended(QString("Poprawiona wiadomość: %1").arg(poprawione));
-
             emit setBelowTextTranslation(18, {QString::number(ret + 1)});
             emit setBelowTextExtendedTranslation(19, {poprawione});
         }
@@ -360,9 +346,7 @@ void ReedSolomonCode::calcSyndromes(Poly* out, Poly* msg, bool forQML)
         QString text = QString("(%1)(%2)").arg(msg->toString()).arg(this->gf.powTable[i]);
         if (forQML)
         {
-            QString belowText = QString("Liczenie syndromu nr %1 - Wartość wiadomości w punkcie α%2").arg(i + 1).arg(i);
             emit setBelowTextCalcSyndromes((i+1), i);
-            //emit setBelowText(belowText);
             emit setBelowTextExtended(text);
             this->waitForQml();
         }
@@ -437,7 +421,6 @@ bool ReedSolomonCode::correctErrata(Poly* msg, Poly* synd, std::vector<unsigned 
 {
     if (forQML)
     {
-        //emit setBelowText("Szukanie wielkości błędu");
         emit setBelowTextTranslation(23, {""});
         emit setBelowTextExtended("");
         this->waitForQml();
@@ -448,9 +431,7 @@ bool ReedSolomonCode::correctErrata(Poly* msg, Poly* synd, std::vector<unsigned 
         coefPos.push_back(msg->n - 1 - i);
         if (forQML)
         {
-            //emit setTopText("Szukanie wielkości błędu");
             emit setTopTextTranslation(23, {""});
-            //emit setBelowText("coef_pos - pozycja błędu liczona od końca od 0");
             emit setBelowTextTranslation(24, {""});
             emit setBelowTextExtended(QString("coef_pos = %1").arg(msg->n - 1 - i));
             this->waitForQml();
@@ -479,7 +460,6 @@ bool ReedSolomonCode::correctErrata(Poly* msg, Poly* synd, std::vector<unsigned 
         int xi = this->gf.powTable[this->gf.characteristic - coefPos[i]];
         if (forQML)
         {
-            //emit setBelowText("xi = 2^(charakterystyka GF - coef_pos)");
             emit setBelowTextTranslation(25, {""});
             emit setBelowTextExtended(QString("xi = 2^(%1 - %2) = %3").arg(this->gf.characteristic).arg(coefPos[i]).arg(xi));
             this->waitForQml();
@@ -513,8 +493,6 @@ bool ReedSolomonCode::correctErrata(Poly* msg, Poly* synd, std::vector<unsigned 
         e.coef[errPos->at(i)] = this->gf.div(y, errLocPrime); //magnitude
         if (forQML)
         {
-            //emit setBelowText("Wielkość błędu = y / err_loc_prime");
-            //emit setBelowTextExtended(QString("Wielkość błędu = %1 / %2 = %3").arg(y).arg(errLocPrime).arg(e.coef[errPos->at(i)]));
             emit setBelowTextTranslation(26, {""});
             emit setBelowTextExtendedTranslation(27, {QString::number(y), " / " , QString::number(errLocPrime), " = ", QString::number(e.coef[errPos->at(i)])});
             this->waitForQml();
@@ -524,7 +502,6 @@ bool ReedSolomonCode::correctErrata(Poly* msg, Poly* synd, std::vector<unsigned 
     Poly_Add(msg, msg, &e);
     if (forQML)
     {
-        //emit setBelowText("Poprawiona wiadomość = błędy + otrzymana wiadomość");
         emit setBelowTextTranslation(28, {""});
         emit setBelowTextExtended(QString("(%1) + (%2)").arg(e.toString()).arg(tmp));
         this->waitForQml();
@@ -538,7 +515,6 @@ bool ReedSolomonCode::findErrorLocator(Poly* out, Poly* synd, bool forQML)
 {
     if (forQML)
     {
-        //emit setTopText("Szukanie wielomianu wykrycia błędów alogrytmem Berlekamp-Masseya");
         emit setTopTextTranslation(29, {""});
     }
     //this spits out a polynomial in reverse order but i dont know why
@@ -560,13 +536,11 @@ bool ReedSolomonCode::findErrorLocator(Poly* out, Poly* synd, bool forQML)
         {
             if (errLoc.n <= 1)
             {
-                //emit setBelowText(QString("delta1 = syndrom nr 1"));
                 emit setBelowTextTranslation(30, {""});
                 emit setBelowTextExtended(QString("delta1 = %1").arg(delta));
             }
             else
             {
-                //emit setBelowText(QString("delta2 = syndrom nr 2 + delta1 * syndrom nr 1").arg(i + 1).arg(synd->coef[K + 1]));
                 emit setBelowTextTranslation(31, {""});
                 emit setBelowTextExtended(QString("delta2 = %1 + %2 * %3 = %4").arg(synd->coef[K]).arg(errLoc.coef[errLoc.n - 2]).arg(synd->coef[K + 1]).arg(delta));
             }
@@ -595,7 +569,6 @@ bool ReedSolomonCode::findErrorLocator(Poly* out, Poly* synd, bool forQML)
             {
                 Poly revErrLoc;
                 Poly_Reverse(&revErrLoc, &errLoc);
-                //emit setBelowText("Lokator = (delta1 + temp * delta2)x + 1");
                 emit setBelowTextTranslation(32, {""});
                 emit setBelowTextExtended(QString("(%1 + %3 * %2)x + 1 = %4").arg(d1).arg(delta).arg(t).arg(revErrLoc.toString()));
                 this->waitForQml();
@@ -870,10 +843,7 @@ void ReedSolomonCode::Poly_ChienSearch(std::vector<unsigned int>* out, Poly* pol
 {
     if (forQML)
     {
-        //emit setTopText("Szukanie pozycji błędu");
         emit setTopTextTranslation(33, {""});
-
-        //emit setBelowText(QString("Lokator ax + b - błąd na pozycji "));
         emit setBelowTextTranslation(34, {""});
     }
 
@@ -889,14 +859,11 @@ void ReedSolomonCode::Poly_ChienSearch(std::vector<unsigned int>* out, Poly* pol
         }
         if (forQML)
         {
-
-            //emit setBelowText(QString("Wartość wielomianu w punkcie 2^%1").arg(i));
             emit setBelowTextTranslation(35, {QString::number(i)});
             emit setBelowTextExtended(QString("(%1)(%2) = %3").arg(poly->toString()).arg(gf->powTable[i]).arg(eval));
             this->waitForQml();
             if (eval == 0)
             {
-                //emit setBelowText(QString("Wartość 0 - błąd na pozycji [długość wiadomości] - %1").arg(i));
                 emit setBelowTextTranslation(36, {QString::number(i)});
                 emit setBelowTextExtended(QString("%1 - %2 = %3").arg(max).arg(i).arg(max - i));
                 this->waitForQml();

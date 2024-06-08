@@ -440,9 +440,6 @@ Page {
         function correctingErrors(){
 
             onSetClickAllow(0, false);
-
-            //stageText.text = "Finding error(s)...";
-            //stageText.text = "Znajdowanie błędu/ów...";
             stageText.text = translationArray.ar[8];
             stageTextExt.visible = false;
             visualiseButton.visible = false;

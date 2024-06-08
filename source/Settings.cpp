@@ -119,7 +119,6 @@ void Settings::readFile(int QMLpage){
 
         }
         if(line != "" && currentPage == QMLpage){
-            //qDebug() << line;
             //text in the language file is in a form of dictionary so we need to extract it by splitting the input text
             lineList = line.split(u'\"');
             output += lineList[1];

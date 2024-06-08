@@ -407,7 +407,6 @@ Page {
         }
 
         Component.onCompleted: {
-            //stageText.text = "Encoding...";
             stageText.text = "Odkodowywanie...";
             hammingCode.encodeData(true);
         }
@@ -415,9 +414,7 @@ Page {
         function onEncodingEnd(){
 
             belowText.text = "";
-            //stageText.text = "Correcting errors";
             stageText.text = qsTr(translationArray.ar[8]);
-            //stageText.text = "Poprawianie błędów";
             stageTextExt.visible = true;
             visualiseButton.visible = true;
 
@@ -427,8 +424,6 @@ Page {
         function correctingErrors(){
 
             onSetClickAllow(0, false);
-
-            //stageText.text = "Finding error(s)...";
             stageText.text = qsTr(translationArray.ar[9]);
             stageTextExt.visible = false;
             visualiseButton.visible = false;
