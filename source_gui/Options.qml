@@ -88,7 +88,6 @@ Page {
                 onClicked:{
                     stackView.clear(); //will go back to Main.qml, dont do push(main.qml)
                     Settings.readFile(0);
-                    //Settings.refreshLanguage()
                 }
             }
         }

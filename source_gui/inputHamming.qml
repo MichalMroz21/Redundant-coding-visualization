@@ -155,7 +155,6 @@ Page {
 
                     else{
                         errorMsg.visible = true
-                        //errorMsg.text = "Wpisz jakiś ciąg 0 i 1!";
                     }
                 }
             }
