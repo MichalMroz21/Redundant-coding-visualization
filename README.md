@@ -19,6 +19,11 @@ Desktop application for visualizing Redundant Coding Algorithms.
 
 <img src="https://github.com/MichalMroz21/Redundant-Coding-Visualization/assets/125133223/8404a0c7-fa9e-4244-a837-c4a0fb53645a" alt="reed" width="640" height="360"/>
 
+## Documentation
+
+Documentation is available in the "documentation" folder of the project. <br>
+In both Polish and English.
+
 ## Configuring & Building
 
 Use QT Creator with Qt6.4 & Boost installed. <br>
@@ -33,15 +38,9 @@ Configure & Build, then run "Tester.exe".
 
 ![image](https://github.com/MichalMroz21/Redundant-Coding-Visualization/assets/125133223/e0c4119e-be7b-4e28-ab43-e1381777dc56)
 
-## Documentation
-
-Documentation is available in the "documentation" folder of the project. <br>
-In both Polish and English.
-
 ## Authors
 
 - [@MichalMroz21](https://github.com/MichalMroz21)
 - [@pionog](https://github.com/pionog)
 - [@evilbc](https://github.com/evilbc)
 - [@bartekk3007](https://github.com/bartekk3007)
-
