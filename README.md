@@ -15,7 +15,7 @@ Insert gif or link to demo
 ## Running Tests
 
 To run Google Test, turn on "MAKE_TEST_EXE" option in root CMakeLists.txt.
-Then run "Tester.exe".
+Configure & Build, then run "Tester.exe".
 
 ![image](https://github.com/MichalMroz21/Redundant-Coding-Visualization/assets/125133223/e0c4119e-be7b-4e28-ab43-e1381777dc56)
 
