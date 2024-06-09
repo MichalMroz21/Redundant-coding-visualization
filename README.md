@@ -41,6 +41,6 @@ Configure & Build, then run "Tester.exe".
 ## Authors
 
 - [@MichalMroz21](https://github.com/MichalMroz21)
-- [@pionog](https://github.com/pionog)
 - [@evilbc](https://github.com/evilbc)
+- [@pionog](https://github.com/pionog)
 - [@bartekk3007](https://github.com/bartekk3007)
