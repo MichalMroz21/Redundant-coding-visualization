@@ -11,7 +11,13 @@ Desktop application for visualizing Redundant Coding Algorithms.
 
 ## Demo
 
-Insert gif or link to demo
+Hamming Code Visualization
+
+![hamming](https://github.com/MichalMroz21/Redundant-Coding-Visualization/assets/125133223/e359cc52-0c1c-41d2-8680-3b6b54a70849)
+
+Reed-Solomon Code Visualization
+
+![reed](https://github.com/MichalMroz21/Redundant-Coding-Visualization/assets/125133223/b6ecb8cf-9f36-4e53-9364-78a349b5ec26)
 
 ## Configuring & Building
 
