@@ -29,7 +29,8 @@ Configure & Build, then run "Tester.exe".
 
 ## Documentation
 
-Documentation is available in the "documentation" folder of the project.
+Documentation is available in the "documentation" folder of the project. <br>
+In both Polish and English.
 
 ## Authors
 
