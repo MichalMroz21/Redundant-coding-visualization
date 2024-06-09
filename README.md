@@ -12,20 +12,16 @@ Desktop application for visualizing redundant coding.
 
 Insert gif or link to demo
 
-
 ## Running Tests
 
-To run tests, run the following command
+To run tests, turn on "MAKE_TEST_EXE" option in root CMakeLists.txt.
+Then run "Tester.exe".
 
-```bash
-  npm run test
-```
-
+![image](https://github.com/MichalMroz21/Redundant-Coding-Visualization/assets/125133223/e0c4119e-be7b-4e28-ab43-e1381777dc56)
 
 ## Documentation
 
-[Documentation](https://linktodocumentation)
-
+Documentation is available in "documentation" folder of the project.
 
 ## Authors
 
