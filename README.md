@@ -1,7 +1,7 @@
 # Redundant-Coding-Visualization
 Desktop application for visualizing Redundant Coding Algorithms.
 
-## Technologies Used
+## Technologies
 
 <img src="https://github.com/MichalMroz21/Redundant-Coding-Visualization/assets/125133223/f782c426-6b9d-4d09-8623-c731b5bd1829" alt="drawing" width="75"/>
 <img src="https://github.com/MichalMroz21/Redundant-Coding-Visualization/assets/125133223/ad1d837d-99cf-4c01-9770-923532f50ce4" alt="drawing" width="75"/>
@@ -11,6 +11,8 @@ Desktop application for visualizing Redundant Coding Algorithms.
 ## Demo
 
 Insert gif or link to demo
+
+## Configuring & Building
 
 ## Running Tests
 
