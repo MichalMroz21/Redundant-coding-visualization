@@ -15,6 +15,10 @@ Insert gif or link to demo
 
 ## Configuring & Building
 
+Use QT Creator with Qt6.4 & Boost installed. Set Boost_COMPILER option in CMakeLists.txt if needed.
+Google Test will be downloaded via git submodules.
+Run CMake and Build the project.
+
 ## Running Tests
 
 To run Google Test, turn on "MAKE_TEST_EXE" option in root CMakeLists.txt.<br>
@@ -24,7 +28,7 @@ Configure & Build, then run "Tester.exe".
 
 ## Documentation
 
-Documentation is available in "documentation" folder of the project.
+Documentation is available in the "documentation" folder of the project.
 
 ## Authors
 
