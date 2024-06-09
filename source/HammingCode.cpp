@@ -4,6 +4,14 @@
 #include <QThread>
 #include <QtMath>
 
+#include <boost/range/adaptor/transformed.hpp>
+#include <boost/range/numeric.hpp>
+#include <boost/range/irange.hpp>
+#include <boost/range/algorithm.hpp>
+#include <boost/algorithm/string/join.hpp>
+#include <boost/range/combine.hpp>
+#include <boost/range/adaptors.hpp>
+
 HammingCode::HammingCode(QObject *parent) : QObject{parent}{}
 
 void HammingCode::setInitialData(QBitArray data, bool extend, int animationDelay, bool infiniteWait){
@@ -16,15 +24,12 @@ void HammingCode::setInitialData(QBitArray data, bool extend, int animationDelay
     this->receivedCode.clear();
 }
 
-void HammingCode::setInitialData(QString data, bool extend, int animationDelay, bool infiniteWait)
-{
-    int n = data.size();
+void HammingCode::setInitialData(QString data, bool extend, int animationDelay, bool infiniteWait){
+    QBitArray bits(data.size());
 
-    QBitArray bits(n);
-
-    for(int i = 0; i < n; i++){
-        bits[i] = (data[i].toLatin1() - '0');
-    }
+    boost::transform(data.toStdString(), const_cast<char*>(bits.bits()),
+        [](QChar c) { return c.toLatin1() - '0'; }
+    );
 
     setInitialData(bits, extend, animationDelay, infiniteWait);
 }
@@ -38,9 +43,9 @@ void HammingCode::sendCode(QString send){
 
     QBitArray code(send.size());
 
-    for(int i = 0; i < send.size(); i++){
-        code[i] = send[i].toLatin1() - '0';
-    }
+    boost::transform(send.toStdString(), const_cast<char*>(code.bits()),
+        [](QChar c) { return c.toLatin1() - '0'; }
+    );
 
     sendCode(code);
 }
@@ -50,6 +55,8 @@ int HammingCode::correctErrorExtended(bool forQML)
     int n = this->m + this->p, C{}, P{}, bit{};
 
     QString belowText{}, initialText{"<font color=\"orange\">C =</font> %1"}, addText{"<font color=\"orange\">C +=</font> %1"}, belowTextExt{};
+
+    auto getBit = [&](int i) { return receivedCode.testBit(i) ? 1 : 0; };
 
     if(forQML){
         emit setBelowText(initialText.arg(C));
@@ -126,26 +133,26 @@ int HammingCode::correctErrorExtended(bool forQML)
         this->waitForQml();
     }
 
-    for(int i = 0; i < n; i++){
-
-        if(forQML){
+    if (forQML) {
+        boost::for_each(boost::irange(0, n), [&](int i) {
             emit turnBitOn(0, i, "light green");
-            belowText.append(QString(i == 0 ? "%1" : " ^ %1").arg(receivedCode[i]));
+            belowText.append(QString(i == 0 ? "%1" : " ^ %1").arg(getBit(i)));
             emit setBelowText(belowText);
             belowTextExt.append(QString(i == 0 ? "%1" : " ^ %1").arg(this->getSymbol(i)));
             emit setBelowTextExtended(belowTextExt);
 
             this->waitForQml();
             emit turnBitOff(0, i);
-        }
-
-        P ^= receivedCode[i];
+        });
     }
+
+    P = boost::accumulate(boost::irange(0, n), P, [&](int acc, int i) { return acc ^ getBit(i); });
 
     emit setBelowTextExtended(QString(""));
     emit setBelowText(QString("C = %1, P = %2").arg(C).arg(P));
 
-    int ret;
+    int ret{};
+
     if(C == 0){ //theory from youtube
         if(P == 1){
             qInfo() << "Error is in extended parity bit";
@@ -182,8 +189,7 @@ int HammingCode::correctErrorExtended(bool forQML)
     return ret;
 }
 
-int HammingCode::correctErrorStandard(bool forQML)
-{
+int HammingCode::correctErrorStandard(bool forQML){
     int n = this->m + this->p, C{}, bit{};
 
     QString belowText{}, initialText{"<font color=\"orange\">C =</font> %1"}, addText{"<font color=\"orange\">C +=</font> %1"}, belowTextExt{};
@@ -252,8 +258,11 @@ int HammingCode::correctErrorStandard(bool forQML)
     }
 
     this->setError(C);
-    int ret;
+
+    int ret{};
+
     emit setBelowText("C = " + QString::number(C));
+
     if(C == 0){ //theory from youtube
         qInfo() << "There is no error!";
         emit setBelowTextExtendedTranslation(11, {""});
@@ -272,8 +281,7 @@ int HammingCode::correctErrorStandard(bool forQML)
 }
 
 //Correct the 1 bit error in received code
-int HammingCode::correctError(bool forQML)
-{
+int HammingCode::correctError(bool forQML){
     if(forQML){
         this->finished = false;
         if(this->encodingExtended){
@@ -307,13 +315,11 @@ int HammingCode::calculateP(){
     }
 
     return newP;
-
 }
 
 bool HammingCode::isPowerTwo(int n){
     return (n > 0) && ((n & (n - 1)) == 0); //O(1) trick
 }
-
 
 void HammingCode::encodeData(bool forQML){
 
@@ -512,13 +518,11 @@ QString HammingCode::getDataStr()
     return ret;
 }
 
-int HammingCode::getAnimationDelayMs() const
-{
+int HammingCode::getAnimationDelayMs() const{
     return animationDelayMs;
 }
 
-void HammingCode::setAnimationDelayMs(int delay)
-{
+void HammingCode::setAnimationDelayMs(int delay){
     this->animationDelayMs = delay;
 }
 
@@ -536,11 +540,9 @@ QBitArray HammingCode::getData(){
 
 QString HammingCode::getReceivedCode() {
     QString ret{};
-
-    for(int i = 0; i < this->receivedCode.size(); i++){
-        ret.append(QChar(this->receivedCode[i] + '0'));
-    }
-
+    boost::transform(std::string(receivedCode.bits()), std::back_inserter(ret), [](char bit) {
+        return QChar( bit ? '1' : '0' );
+    });
     return ret;
 }
 
@@ -548,8 +550,7 @@ bool HammingCode::getEncodingExtended() const{
     return encodingExtended;
 }
 
-void HammingCode::setInfiniteWait(bool value)
-{
+void HammingCode::setInfiniteWait(bool value){
     this->infiniteWait = value;
 }
 
@@ -562,8 +563,7 @@ bool HammingCode::isFinished() {
     return this->finished;
 }
 
-void HammingCode::waitForQml()
-{
+void HammingCode::waitForQml(){
     if (this->infiniteWait) {
         while (!this->buttonPressed && this->infiniteWait && !this->shouldQuit);
         this->buttonPressed = false;
@@ -572,8 +572,7 @@ void HammingCode::waitForQml()
         QThread::currentThread()->msleep(this->animationDelayMs);
 }
 
-void HammingCode::pressButton()
-{
+void HammingCode::pressButton(){
     this->buttonPressed = true;
 }
 
@@ -584,29 +583,37 @@ QString HammingCode::getGenerationMatrixStr()
 {
     QString ret{};
 
-    int numOfCols = this->m + this->p;
-    int numOfRows = this->m;
+    int numOfCols = this->m + this->p,
+        numOfRows = this->m,
+        position = 3; // position in the encoded data of non-parity bit, 1 and 2 are parity
 
-    int position = 3; // position in the encoded data of non-parity bit, 1 and 2 are parity
-    for(int i = 0; i < numOfRows; i++) {
-        QString parityRow{};
+    for(const auto i : boost::irange(numOfRows)) {
+        QStringList parityRow;
+
         while (isPowerTwo(position)) position++; // has to be non-parity
-        int n = i;
-        int parityBitCounter = 0;
+
+        int n = i, parityBitCounter = 0;
+
         for (int j = 0; j < numOfCols; j++) {
-            bool bitUsedInCurrentPosition = false;
-            bool isParity = isPowerTwo(j + 1);
+
+            bool bitUsedInCurrentPosition = false,
+                 isParity = isPowerTwo(j + 1);
+
             if(!isParity) {
                 bitUsedInCurrentPosition = ((n--) == 0); // bit used at n-th non-parity position
                 ret.append(QChar(bitUsedInCurrentPosition ? '1' : '0'));
-            } else {
+            }
+            else {
                 bitUsedInCurrentPosition = (1 << parityBitCounter) & position;
                 parityBitCounter++;
                 parityRow.append(QChar(bitUsedInCurrentPosition ? '1' : '0'));
             }
         }
-        ret.append(parityRow); // non-parity columns first - makes the matrix canonical
+
+        ret.append(parityRow.join(""));
+
         if (i != numOfRows - 1) ret.append(QChar('\n'));
+
         position++;
     }
 
@@ -622,51 +629,50 @@ QString HammingCode::getGenerationMatrixStr()
 QString HammingCode::getErrorMatrixStr() {
     QString ret{};
 
-    int numOfCols = this->m + this->p;
-    int numOfRows = this->p;
+    int numOfCols = this->m + this->p,
+        numOfRows = this->p;
 
-    for(int i = 0; i < numOfRows; i++) {
+    for (const auto i : boost::irange(numOfRows)) {
         QString row{};
 
-        int zeroCount = (1 << i) - 1;
-        int colCounter = 0;
-        for (int j = 0; j < zeroCount; j++) {
-            row.append(QChar('0'));
-            colCounter++;
-        }
+        int zeroCount = (1 << i) - 1,
+            colCounter = 0;
+
+        std::fill_n(std::back_inserter(row), zeroCount, '0');
+        colCounter += zeroCount;
+
         bool insertZero = false;
         int howManyInARow = (1 << i);
+
         while (colCounter < numOfCols) {
-            for (int j = 0; j < howManyInARow && colCounter < numOfCols; j++) {
-                row.append(QChar(insertZero ? '0' : '1'));
-                colCounter++;
-            }
+            int remainingCols = std::min(howManyInARow, numOfCols - colCounter);
+            char value = insertZero ? '0' : '1';
+            std::fill_n(std::back_inserter(row), remainingCols, value);
+            colCounter += remainingCols;
             insertZero = !insertZero;
         }
+
         if (i != 0) row.append(QChar('\n'));
         ret.prepend(row);
     }
+
     return ret;
 }
 
-
 QString HammingCode::getEncodedStr() {
-    QString ret{};
-    QString error = getError();
-    QString received = getReceivedCode();
+    QString ret{}, error = getError(), received = getReceivedCode();
 
-    // Perform XOR operation character by character
-    for (int i = 0; i < error.length(); ++i) {
-        // Convert characters to integers and perform XOR
-        int errorBit = error.at(i).digitValue();
-        int receivedBit = received.at(i).digitValue();
-        int xorResult = errorBit ^ receivedBit;
+    auto combinedStrings = boost::combine(error.toStdString(), received.toStdString());
 
-        ret.append(QString::number(xorResult));
-    }
+    boost::transform(combinedStrings, std::back_inserter(ret), [](const auto& pair) {
+        int errorBit = boost::get<0>(pair) - '0',
+            receivedBit = boost::get<1>(pair) - '0',
+            xorResult = errorBit ^ receivedBit;
+
+        return static_cast<char>(xorResult + '0');
+    });
 
     return ret;
-
 }
 
 QString HammingCode::getError() {
@@ -677,15 +683,15 @@ QString HammingCode::getSyndrome() {
     return this->syndrome;
 }
 
-void HammingCode::setError(int C)
-{
-    this->error = {};
+void HammingCode::setError(int C){
     int syndromeLength = qCeil(qLn(this->m + this->p) / qLn(2));
+
+    this->error = {};
     this->syndrome = QString::number(C, 2).rightJustified(syndromeLength, '0'); // converts to binary, left padded with 0s
-    for (int i = 0; i < this->m + this->p; i++) {
+
+    for (int i : boost::irange(0, this->m + this->p)) {
         this->error.append(QChar(i == C - 1 ? '1' : '0'));
     }
-
 }
 
 QString HammingCode::getSymbol(int index) {
@@ -694,9 +700,10 @@ QString HammingCode::getSymbol(int index) {
 
 void HammingCode::setSymbols() {
     this->symbols = {};
-    int parityIndex = 0;
-    int dataIndex = 0;
-    for (int i = 0; i < this->m + this->p; i++) {
+
+    int parityIndex = 0, dataIndex = 0;
+
+    for (int i : boost::irange(0, this->m + this->p)) {
         QString symbol;
         if (isPowerTwo(i + 1)) symbol = QString("p%1").arg(parityIndex++);
         else symbol = QString("d%1").arg(dataIndex++);
@@ -705,12 +712,16 @@ void HammingCode::setSymbols() {
 }
 
 QString HammingCode::getDecodedStr() {
-    QString ret {};
-    QString encoded = getEncodedStr();
-    for (int i = this->encodingExtended ? 1 : 0; i < this->m + this->p; i++) {
-        if (isPowerTwo(this->encodingExtended ? i : i + 1)) continue;
+    QString ret {}, encoded = getEncodedStr();
+
+    auto nonParityFilter = [this](int i) {
+        return !isPowerTwo(this->encodingExtended ? i : i + 1);
+    };
+
+    for (int i : boost::irange(this->encodingExtended ? 1 : 0, this->m + this->p)
+                     | boost::adaptors::filtered(nonParityFilter)) {
         ret.append(encoded.at(i));
     }
     return ret;
-
 }
+

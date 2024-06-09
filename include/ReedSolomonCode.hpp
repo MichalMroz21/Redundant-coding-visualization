@@ -155,13 +155,14 @@ signals:
     void endErrorCorrection();
 
 private:
-    static const int k = 5, nsym = 2, fieldPower = 3, total = k + nsym;
-
+    static constexpr int k = 5, nsym = 2, fieldPower = 3, total = k + nsym;
 
     QString data{}, receivedCode{}, dataEncoded{};
-    int dataArr[k], receivedCodeArr[total], dataEncodedArr[total];
-    int animationDelayMs{};
+
+    int dataArr[k], receivedCodeArr[total], dataEncodedArr[total], animationDelayMs{};
+
     volatile bool infiniteWait = false, buttonPressed = false, shouldQuit = false, finished = true;
+
     GaloisField gf;
 
     void waitForQml();
