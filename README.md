@@ -16,7 +16,7 @@ Insert gif or link to demo
 ## Configuring & Building
 
 Use QT Creator with Qt6.4 & Boost installed. <br>
-Set Boost_COMPILER option in CMakeLists.txt if needed.<br>
+Set Boost_COMPILER & Boost_USE_STATIC_RUNTIME option in CMakeLists.txt if needed.<br>
 Google Test will be downloaded via git submodules.<br>
 Run CMake and Build the project.<br>
 
