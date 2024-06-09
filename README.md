@@ -1,5 +1,5 @@
 # Redundant-Coding-Visualization
-Desktop application for visualizing redundant coding.
+Desktop application for visualizing Redundant Coding Algorithms.
 
 ## Technologies Used
 
