@@ -62,6 +62,7 @@ RowLayout{
                             }
                             else parent.children[0].text = "0";
 
+                            parent.children[0].color = "red";
                             parent.parent.currentChanged += 1;
                             parent.parent.changedArr[index] = true;
                         }
@@ -70,6 +71,7 @@ RowLayout{
                     else{
                         parent.parent.changedArr[index] = false;
                         parent.parent.currentChanged -= 1;
+                        parent.children[0].color = "black";
 
                         if(parent.children[0].text === "0"){
                             parent.children[0].text = "1";

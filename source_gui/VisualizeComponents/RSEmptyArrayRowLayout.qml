@@ -41,7 +41,7 @@ RowLayout{
                 acceptedButtons: Qt.LeftButton | Qt.RightButton
 
                 onClicked : {
-                    let newChar = (parent.children[0].text[0] - '0' + 1) % 10;
+                    let newChar = (parent.children[0].text[0] - '0' + 1) % 8;
                     if(parent.parent.changedArr[index] === false){
                         if (parent.parent.currentChanged >= parent.parent.changeLimit) return;
                         parent.children[0].text = newChar
