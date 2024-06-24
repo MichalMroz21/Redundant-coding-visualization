@@ -15,8 +15,8 @@ CheckBox{
         Text {
             width: 10
             height: 10
-            x: 1
-            y: -3
+            x: -2
+            y: -6
             text: "✔"
             font.pointSize: 18
             color: parent.parent.down ? "#17a81a" : "#21be2b"
